@@ -37,7 +37,7 @@ if (WIN32)
   set_target_properties(bitd-sink-influxdb PROPERTIES PREFIX "")
 endif()
 
-install(TARGETS bitd-echo ${BITD_MODULE_EXEC} 
+install(TARGETS bitd-echo bitd-assert ${BITD_MODULE_EXEC} 
 	bitd-ssl bitd-curl bitd-config-log bitd-sink-graphite bitd-sink-influxdb
         RUNTIME DESTINATION bin COMPONENT Runtime
 	LIBRARY DESTINATION lib${BITD_LIBSUFFIX} COMPONENT Development
