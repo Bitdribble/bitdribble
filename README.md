@@ -53,3 +53,7 @@ And after setting test instance configuration in ``/etc/bitd-agent.yml`` accordi
 sudo systemctl enable bitd
 sudo systemctl start bitd
 ```
+
+Lincense
+========
+The code is licensed under an Apache version 2 license.
