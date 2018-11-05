@@ -52,4 +52,4 @@ sudo systemctl start bitd
 ```
 
 # License
-The code is licensed under an Apache version 2 license.
+The code is licensed under the Apache version 2 license.
