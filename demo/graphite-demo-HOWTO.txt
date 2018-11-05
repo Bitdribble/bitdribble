@@ -1,0 +1,31 @@
+1. Start the Graphite server:
+
+docker run -d --name graphite --restart=always -p 80:80 -p 2013-2014:2003-2004 -p 2023-2024:2023-2024 -p 8125:8125/udp -p 8126:8126 graphiteapp/graphite-statsd
+
+2. Start the Grafana server:
+
+docker run -d -p 3000:3000 --name grafana -e "GF_SECURITY_ADMIN_PASSWORD=admin" grafana/grafana
+
+3. Point your graphite-demo.yaml to the Carbon server on the Graphite docker:
+
+task-inst:
+  task-name: sink-graphite
+  task-inst-name: sink-graphite
+  schedule:
+    type: triggered-raw
+    tags:
+      sink: graphite
+  args:
+    server: localhost:2013 # Point to carbon server port
+    queue-size: 1000000
+
+4. Run the module-agent:
+
+module-agent -cy graphite-demo.yml
+
+Or run the docker agent:
+
+docker run -v /home/andrei/build/software/demo:/config --rm --name module-agent-centos -it module-agent-centos -c /config/graphite-demo2.yml -r /dev/null
+
+5. Configure the Grafana dashboard from graphite-demo-dashboard.json
+

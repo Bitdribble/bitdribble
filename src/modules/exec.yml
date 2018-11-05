@@ -1,0 +1,24 @@
+tags:
+  node: localhost
+  node-group: group1
+modules:
+  module-name: bitd-exec
+task-inst:
+  task-name: exec
+  task-inst-name: Exec task instance
+  schedule:
+    type: periodic
+    interval: 1s
+  args:
+    command: echo hi
+#    command: ping -c 1 localhost|grep rtt|awk '{print $4}'| sed s:/:\ :g|awk '{printf "%.3f", $1}'
+#    command: 'curl -w "@curl-format.txt" -o /dev/null -s http://mit.edu'
+#    command: 'curl -w "time_total:  %{time_total}\ndetail: \n  time_namelookup:  %{time_namelookup}\n  time_connect:  %{time_connect}\n  time_appconnect:  %{time_appconnect}\n  time_pretransfer:  %{time_pretransfer}\n  time_redirect:  %{time_redirect}\n  time_starttransfer:  %{time_starttransfer}\n" -Ss http://mit.edu'
+    command-tmo: 10
+    output-type: string
+  tags:
+    foo: bar
+
+
+
+

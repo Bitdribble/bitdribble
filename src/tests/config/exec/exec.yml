@@ -1,0 +1,130 @@
+modules:
+  module-name: bitd-exec
+  module-name: bitd-assert
+
+#
+# Test string input parameter
+#
+task-inst:
+  task-name: exec
+  task-inst-name: Exec-string-input
+  schedule:
+    type: once
+  args:
+    command: cat
+    command-tmo: 1
+  input: 1234
+task-inst:
+  task-name: assert
+  task-inst-name: Assert-string-input
+  schedule:
+    type: triggered-raw
+    task-inst-name: Exec-string-input
+  args:
+    output: 1234
+
+#
+# Test yaml input parameter
+#
+task-inst:
+  task-name: exec
+  task-inst-name: Exec-yaml-input
+  schedule:
+    type: once
+  args:
+    command: cat
+    command-tmo: 1
+  input:
+    a: b
+    c: d
+task-inst:
+  task-name: assert
+  task-inst-name: Assert-yaml-input
+  schedule:
+    type: triggered-raw
+    task-inst-name: Exec-yaml-input
+  args:
+    output: 
+      a: b
+      c: d
+
+#
+# Test blob input parameter
+#
+task-inst:
+  task-name: exec
+  task-inst-name: Exec-blob-input
+  schedule:
+    type: once
+  args:
+    command: cat
+    command-tmo: 1
+  input: !!binary MTIzNDU2Nzg5MA== # 1234567890 in base64
+task-inst:
+  task-name: assert
+  task-inst-name: Assert-blob-input
+  schedule:
+    type: triggered-raw
+    task-inst-name: Exec-blob-input
+  args:
+    output: 1234567890
+
+#
+# Test output parameter
+#
+task-inst:
+  task-name: exec
+  task-inst-name: Exec-output
+  schedule:
+    type: once
+  args:
+    command: echo hi
+    command-tmo: 1
+task-inst:
+  task-name: assert
+  task-inst-name: Assert-output
+  schedule:
+    type: triggered-raw
+    task-inst-name: Exec-output
+  args:
+    output: hi
+
+#
+# Test error parameter
+#
+task-inst:
+  task-name: exec
+  task-inst-name: Exec-error
+  schedule:
+    type: once
+  args:
+    command: echo hi >&2
+    command-tmo: 1
+task-inst:
+  task-name: assert
+  task-inst-name: Assert-error
+  schedule:
+    type: triggered-raw
+    task-inst-name: Exec-error
+  args:
+    error: hi
+
+#
+# Test timeout parameter
+#
+task-inst:
+  task-name: exec
+  task-inst-name: Exec-timeout
+  schedule:
+    type: once
+  args:
+    command: sleep 1
+    command-tmo: .1
+task-inst:
+  task-name: assert
+  task-inst-name: Assert-timeout
+  schedule:
+    type: triggered-raw
+    task-inst-name: Exec-timeout
+  args:
+    exit-code: -1

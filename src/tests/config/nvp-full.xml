@@ -1,0 +1,45 @@
+<?xml version='1.0'?>
+<nvp type='nvp'>
+ <name-void type='void'/>
+ <name-boolean type='boolean'>FALSE</name-boolean>
+ <name-int8 type='int64'>-128</name-int8>
+ <name-int8 type='int64'>127</name-int8>
+ <name-uint8 type='int64'>255</name-uint8>
+ <name-int16 type='int64'>-32768</name-int16>
+ <name-int16 type='int64'>32767</name-int16>
+ <name-uint16 type='int64'>65535</name-uint16>
+ <name-int32 type='int64'>-2147483648</name-int32>
+ <name-int32 type='int64'>2147483647</name-int32>
+ <name-uint32 type='int64'>4294967295</name-uint32>
+ <name-int64 type='int64'>-9223372036854775808</name-int64>
+ <name-int64 type='int64'>9223372036854775807</name-int64>
+ <name-uint64 type='uint64'>18446744073709551615</name-uint64>
+ <name-double type='double'>100000.0</name-double>
+ <name-string type='string'/>
+ <name-string type='string'>True</name-string>
+ <name-string type='string'>123</name-string>
+ <name-string type='string'>123.0</name-string>
+ <name-string type='string'>string-value</name-string>
+ <name-blob type='blob'>MDEyMzQ1Njc4OQo=</name-blob>
+ <empty-nvp-value type='nvp'/>
+ <full-nvp-value type='nvp'>
+  <name-void type='void'/>
+  <name-boolean type='boolean'>FALSE</name-boolean>
+  <name-int8 type='int64'>-127</name-int8>
+  <name-uint8 type='int64'>255</name-uint8>
+  <name-int16 type='int64'>-32767</name-int16>
+  <name-uint16 type='int64'>65535</name-uint16>
+  <name-int32 type='int64'>-2147483647</name-int32>
+  <name-uint32 type='int64'>4294967295</name-uint32>
+  <name-int64 type='int64'>-9223372036854775807</name-int64>
+  <name-uint64 type='uint64'>18446744073709551615</name-uint64>
+  <name-double type='double'>1.99</name-double>
+  <name-string type='string'/>
+  <name-string type='string'>True</name-string>
+  <name-string type='string'>123</name-string>
+  <name-string type='string'>123.0</name-string>
+  <name-string type='string'>string-value</name-string>
+  <name-blob type='blob'>MDEyMzQ1Njc4OQo=</name-blob>
+  <empty-nvp-value type='nvp'/>
+ </full-nvp-value>
+</nvp>

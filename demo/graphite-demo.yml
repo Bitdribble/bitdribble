@@ -1,0 +1,86 @@
+tags:
+  node: localhost
+  node-group: group1
+modules:
+  module-name: bitd-echo
+  module-name: bitd-exec
+  module-name: bitd-sink-graphite
+  module-name: bitd-config-log
+task-inst:
+  task-name: config-log
+  task-inst-name: config-log
+  schedule:
+    type: config
+  input:
+    log-level: warn
+    log-key:
+      key-name: bitd-sink-graphite
+      log-level: warn
+task-inst:
+  task-name: echo
+  task-inst-name: echo1
+  schedule:
+    type: periodic
+    interval: 1ms
+  args:
+    name-int64: -128
+  tags:
+    sink: graphite
+task-inst:
+  task-name: exec
+  task-inst-name: ping_to_localhost
+  schedule:
+    type: periodic
+    interval: 10ms
+  args:
+    command: ping -c 1 localhost|grep rtt|awk '{print $4}'| sed s:/:\ :g|awk '{printf "%.3f", $1}'
+    command-tmo: 10
+  tags:
+    sink: graphite
+task-inst:
+  task-name: exec
+  task-inst-name: ping_to_mit
+  schedule:
+    type: periodic
+    interval: 30s
+  args:
+    command: ping -c 1 mit.edu|grep rtt|awk '{print $4}'| sed s:/:\ :g|awk '{printf "%.3f", $1}'
+    command-tmo: 10
+  tags:
+    sink: graphite
+task-inst:
+  task-name: exec
+  task-inst-name: web_to_localhost
+  schedule:
+    type: periodic
+    interval: 10ms
+  args:
+    command: 'curl -w "time_total:  %{time_total}\ndetail: \n  time_namelookup:  %{time_namelookup}\n  time_connect:  %{time_connect}\n  time_appconnect:  %{time_appconnect}\n  time_pretransfer:  %{time_pretransfer}\n  time_redirect:  %{time_redirect}\n  time_starttransfer:  %{time_starttransfer}\n" -Ss --output /dev/null http://192.168.10.5'
+    command-tmo: 10
+  tags:
+    sink: graphite
+task-inst:
+  task-name: exec
+  task-inst-name: web_to_mit
+  schedule:
+    type: periodic
+    interval: 30s
+  args:
+    command: 'curl -w "time_total:  %{time_total}\ndetail: \n  time_namelookup:  %{time_namelookup}\n  time_connect:  %{time_connect}\n  time_appconnect:  %{time_appconnect}\n  time_pretransfer:  %{time_pretransfer}\n  time_redirect:  %{time_redirect}\n  time_starttransfer:  %{time_starttransfer}\n" -Ss --output /dev/null http://mit.edu'
+    command-tmo: 10
+  tags:
+    sink: graphite
+task-inst:
+  task-name: sink-graphite
+  task-inst-name: sink-graphite
+  schedule:
+    type: triggered-raw
+    tags:
+      sink: graphite
+  args:
+    server: localhost:2013
+    queue-size: 1000000
+
+
+
+

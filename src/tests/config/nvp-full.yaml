@@ -1,0 +1,44 @@
+---
+!!str seq: !!int 0
+---
+!!str seq: !!int 1
+---
+!!str seq: !!int 2
+---
+!!str name-void: !!null 
+!!str name-boolean: !!bool TRUE
+!!str name-int8:
+- !!int -128
+- !!int 127
+!!str name-uint8: !!int 255
+!!str name-int16:
+- !!int -32768
+- !!int 32767
+!!str name-uin16: !!int 65535
+!!str name-int32: !!int -2147483648
+!!str name-uin32: !!int 4294967295
+!!str name-int64: !!int -9223372036854775808
+!!str name-uint64: !!int 18446744073709551615
+!!str name-double: !!float 100000.0
+!!str name-string: !!str string-value
+!!str name-blob: !!binary MDEyMzQ1Njc4OQo=
+!!str empty-nvp-value: {}
+!!str full-nvp-value:
+  !!str name-boolean: !!bool TRUE
+  !!str name-int8:
+  - !!int -128
+  - !!int 127
+  !!str name-uint8: !!int 255
+  !!str name-int16:
+  - !!int -32768
+  - !!int 32767
+  !!str name-uin16: !!int 65535
+  !!str name-int32: !!int -2147483648
+  !!str name-uin32: !!int 4294967295
+  !!str name-int64: !!int -9223372036854775808
+  !!str name-uin64: !!int 18446744073709551615
+  !!str name-double: !!float 100000.0
+  !!str name-string: !!str string-value
+  !!str name-blob: !!binary MDEyMzQ1Njc4OQo=
+  !!str empty-nvp-value: {}
+...

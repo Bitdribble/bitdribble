@@ -1,0 +1,15 @@
+modules:
+  module-name: bitdd-config-log
+task-inst:
+  task-name: config-log
+  task-inst-name: config-log
+  schedule:
+    type: config
+  input:
+    log-level: info
+    log-key:
+      key-name: module-mgr
+      log-level: info
+    log-key:
+      key-name: module-agent
+      log-level: none

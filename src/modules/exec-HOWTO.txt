@@ -1,0 +1,25 @@
+Commands to run:
+
+
+Ping single probe:
+ping -c 1 localhost|grep rtt|awk '{print $4}'| sed s:/:\ :g|awk '{print $1}'
+
+Web page download:
+wget mit.edu 2>&1|tail -n 3|grep saved|awk '{print $3 " " $4}'|sed s/"("//g|sed s/")"//g
+
+Also:
+curl -w "@curl-format.txt" -o /dev/null -s http://mit.edu
+
+where curl-format.txt is as below:
+
+\n
+            time_namelookup:  %{time_namelookup}\n
+               time_connect:  %{time_connect}\n
+            time_appconnect:  %{time_appconnect}\n
+           time_pretransfer:  %{time_pretransfer}\n
+              time_redirect:  %{time_redirect}\n
+         time_starttransfer:  %{time_starttransfer}\n
+                            ----------\n
+                 time_total:  %{time_total}\n
+\n
+

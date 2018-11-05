@@ -1,0 +1,35 @@
+{
+    "name-boolean" : true,
+    "name-int8" : [ -128, 127 ],
+    "name-uint8" : 255,
+    "name-int16" : [ -32768, 32767],
+    "name-uin16" : 65535,
+    "name-int32" : -2147483648,
+    "name-uin32" : 4294967295,
+    "name-int64" : -9223372036854775808,
+    "name-uin64" : 18446744073709551615,
+    "name-double" : 100000.0,
+    "name-string" : "string-value",
+    "name-blob" : {
+	type = "blob", 
+	value = "abcdABCD"
+    },
+    "empty-nvp-value" : {},
+    "full-nvp-value" : {
+	"name-boolean" : true,
+	"name-int8" : [ -128, 127 ],
+	"name-uint8" : 255,
+	"name-int16" : [ -32768, 32767],
+	"name-uin16" : 65535,
+	"name-int32" : -2147483648,
+	"name-uin32" : 4294967295,
+	"name-int64" : -9223372036854775808,
+	"name-uin64" : 18446744073709551615,
+	"name-double" : 100000.0,
+	"name-string" : "string-value",
+	"name-blob" : {
+	    type = "blob", 
+	    value = "abcdABCD"
+	}
+    }
+}

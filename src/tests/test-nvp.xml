@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<nvp>
+  <name-void type='void'></name-void>
+  <name-boolean type='boolean'>FALSE</name-boolean>
+  <name-int64 type='int64'>-9223372036854775808</name-int64>
+  <name-int64 type='int64'>9223372036854775807</name-int64>
+  <name-uint64 type='uint64'>18446744073709551615</name-uint64>
+  <name-double type='double'>100000</name-double>
+  <name-string type='string'>string-:value</name-string>
+  <name-blob type='blob'>MDEyMzQ1Njc4OQo=</name-blob>
+  <empty-nvp-value type='nvp'>
+  </empty-nvp-value>
+  <full-nvp-value type='nvp'>
+    <name-void type='void'></name-void>
+    <name-boolean type='boolean'>FALSE</name-boolean>
+    <name-int64 type='int64'>-9223372036854775807</name-int64>
+    <name-uint64 type='uint64'>18446744073709551615</name-uint64>
+    <name-double type='double'>-0.990000</name-double>
+    <name-string type='string'>string-value</name-string>
+    <name-blob type='blob'>MDEyMzQ1Njc4OQo=</name-blob>
+    <empty-nvp-value type='nvp'>
+    </empty-nvp-value>
+  </full-nvp-value>
+</nvp>

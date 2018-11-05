@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<nvp>
+  <new>foo</new>
+  <old-and-new>foo</old-and-new>
+  <new-and-base>foo</new-and-base>
+  <old-and-new-and-base>foo</old-and-new-and-base>
+</nvp>

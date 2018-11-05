@@ -1,0 +1,6 @@
+# To build docker image
+cd bitdribble/docker
+docker build --rm --no-cache -f alpine -t bitdribble/alpine-build . 
+
+# To execute container
+docker run -v /home/andrei/build/bitdribble:/bitdribble --rm --name alpine-build --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -it bitdribble/alpine-build

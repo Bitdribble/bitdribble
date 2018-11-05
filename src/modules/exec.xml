@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<module-config>
+  <modules>
+    <module-name>bitd-exec</module-name>
+  </modules>
+  <task-inst>
+    <task-name>exec</task-name>  
+    <task-inst-name>Exec 1</task-inst-name>  
+    <schedule>
+      <type>periodic</type>
+      <interval>1s</interval>
+    </schedule>  
+    <args>
+      <command>echo hi</command>
+      <command-tmo>10</command-tmo>
+    </args>
+  </task-inst>
+</module-config>

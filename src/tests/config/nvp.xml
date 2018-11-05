@@ -1,0 +1,45 @@
+<?xml version='1.0'?>
+<nvp>
+ <name-void/>
+ <name-boolean>FALSE</name-boolean>
+ <name-int8>-128</name-int8>
+ <name-int8>127</name-int8>
+ <name-uint8>255</name-uint8>
+ <name-int16>-32768</name-int16>
+ <name-int16>32767</name-int16>
+ <name-uint16>65535</name-uint16>
+ <name-int32>-2147483648</name-int32>
+ <name-int32>2147483647</name-int32>
+ <name-uint32>4294967295</name-uint32>
+ <name-int64>-9223372036854775808</name-int64>
+ <name-int64>9223372036854775807</name-int64>
+ <name-uint64>18446744073709551615</name-uint64>
+ <name-double>100000.0</name-double>
+ <name-string type='string'/>
+ <name-string type='string'>True</name-string>
+ <name-string type='string'>123</name-string>
+ <name-string type='string'>123.0</name-string>
+ <name-string>string-value</name-string>
+ <name-blob type='blob'>MDEyMzQ1Njc4OQo=</name-blob>
+ <empty-nvp-value type='nvp'/>
+ <full-nvp-value>
+  <name-void/>
+  <name-boolean>FALSE</name-boolean>
+  <name-int8>-127</name-int8>
+  <name-uint8>255</name-uint8>
+  <name-int16>-32767</name-int16>
+  <name-uint16>65535</name-uint16>
+  <name-int32>-2147483647</name-int32>
+  <name-uint32>4294967295</name-uint32>
+  <name-int64>-9223372036854775807</name-int64>
+  <name-uint64>18446744073709551615</name-uint64>
+  <name-double>1.99</name-double>
+  <name-string type='string' />
+  <name-string type='string'>True</name-string>
+  <name-string type='string'>123</name-string>
+  <name-string type='string'>123.0</name-string>
+  <name-string>string-value</name-string>
+  <name-blob type='blob'>MDEyMzQ1Njc4OQo=</name-blob>
+  <empty-nvp-value type='nvp'/>
+ </full-nvp-value>
+</nvp>

@@ -1,0 +1,42 @@
+env:
+  - env1-name: env1 value
+  - env2-name: env2 value
+modules:
+  module-name: bitd-echo
+  module-name: bitd-sink-graphite
+  module-name: bitd-config-log
+task-inst:
+  task-name: config-log
+  task-inst-name: config-log
+  schedule:
+    type: config
+  input:
+    log-level: warn
+    log-key:
+      key-name: bitd-sink-graphite
+      log-level: debug
+task-inst:
+  task-name: echo
+  task-inst-name: Echo task inst 2
+  schedule:
+    type: random
+    interval: 1s
+  args:
+    name-int64: -128
+    name-int64-2: 127
+  tags:
+    tag1: value1
+    tag2: value3
+task-inst:
+  task-name: sink-graphite
+  task-inst-name: Sink 1
+  schedule:
+    type: triggered-raw
+    task-name: echo
+    task-inst-name: Echo task inst 2
+    tags:
+      tag1: value1
+      tag2: value3
+  args:
+    server: localhost:2013
+    queue-size: 1000

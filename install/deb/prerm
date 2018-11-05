@@ -1,0 +1,2 @@
+systemctl stop bitd >/dev/null 2>&1
+systemctl disable bitd >/dev/null 2>&1
