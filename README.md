@@ -21,12 +21,12 @@ Supported platforms
 ===================
 The ``bitd-agent`` runs on Linux, Mac OSX, native Windows and Cygwin Windows. For detailed compilation instructions, see the project documentation. To compile on Linux, ensure that the ``expat``, ``libyaml``, ``openssl`` and ``libcurl`` development libraries installed. Check out the Git sandbox, and execute ``cmake; make`` then, as root, ``make install``. Version 3 ``cmake`` is required. The ``cmake`` step is best executed out of folder. For example on Centos 7:
 
-.. code-block:: none
+```
+sudo yum install cmake3 expat-devel libyaml-devel openssl-devel libcurl-devel
 
-   sudo yum install cmake3 expat-devel libyaml-devel openssl-devel libcurl-devel
-
-   cd .../bitdribble
-   mkdir build && cd build && cmake3 ..
-   make
-   sudo make install
+cd .../bitdribble
+mkdir build && cd build && cmake3 ..
+make
+sudo make install
+```
 
