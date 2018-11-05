@@ -6,7 +6,7 @@ addons:
     packages:
       - cmake-data
       - cmake
-script: cmake && make && make test
+script: mkdir build && cd build && cmake .. && make && make test
 compiler:
   - clang
   - gcc
