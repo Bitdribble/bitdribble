@@ -1,5 +1,5 @@
-The bitd-agent
-==============
+# The bitd-agent [![Build Status](https://travis-ci.com/Bitdribble/bitdribble.svg?branch=master)](https://travis-ci.com/Bitdribble/bitdribble)
+
 The bitd-agent is a dev/ops integration tool with the ability to schedule and run tasks, and to create flows of triggered tasks where the output of a task instance can be used as input to one or more other task instances. The output of task instances can be sent to a Graphite or InfluxDB database back end, where it is visualized with Grafana dashboards.
 
 Configuration for the bitd-agent can be set in ``yaml`` or ``xml`` format. The configuration file defines which task instances will be running, on what schedule, and which flows of triggered task instances are created. 
@@ -12,17 +12,14 @@ Configuration for the bitd-agent can be set in ``yaml`` or ``xml`` format. The c
 - The ``bitd-sink-influxdb`` module, containing the ``sink-influxdb`` task, which sends output to an InfluxDB database.
 
 
-Documentation
-=============
+# Documentation
 Project documentation is available at http://bitdribble.com/doc and at https://bitdribble.readthedocs.io. 
 
 
-Supported platforms
-===================
+# Supported platforms
 The ``bitd-agent`` runs on Linux, Mac OSX, native Windows and Cygwin Windows. 
 
-Installation
-============
+# Installation
 For detailed compilation instructions on non-Linux platforms, see the project documentation. To compile on Linux, ensure that the ``expat``, ``libyaml``, ``openssl`` and ``libcurl`` development libraries installed. Check out the Git sandbox, and execute ``cmake; make`` then, as root, ``make install``. Version 3 ``cmake`` is required. The ``cmake`` step is best executed out of folder. For example on ``Centos 7``:
 
 ```
@@ -54,6 +51,5 @@ sudo systemctl enable bitd
 sudo systemctl start bitd
 ```
 
-Lincense
-========
+# License
 The code is licensed under an Apache version 2 license.
