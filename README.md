@@ -11,4 +11,14 @@ Configuration for the bitd-agent can be set in ``yaml`` or ``xml`` format. The c
 - The ``bitd-sink-graphite`` module, containing the ``sink-graphite`` task, which sends output to a Graphite database
 - The ``bitd-sink-influxdb`` module, containing the ``sink-influxdb`` task, which sends output to an InfluxDB database.
 
-Project documentation is available at http://bitdribble.com/doc.
+
+Documentation
+=============
+Project documentation is available at http://bitdribble.com/doc and at https://bitdribble.readthedocs.io. 
+
+
+Supported platforms
+===================
+The ``bitd-agent`` runs on Linux, Mac OSX, native Windows and Cygwin Windows. For detailed compilation instructions, see the project documentation. To compile on Linux, ensure that the `expat``, ``libyaml``, ``openssl`` and ``libcurl`` development libraries installed. Check out the Git sandbox, and execute ``cmake; make; make install``. Version 3 ``cmake`` is required. For example on Centos 7:
+
+
