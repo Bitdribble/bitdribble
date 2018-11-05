@@ -31,7 +31,8 @@ sudo yum install cmake3 expat-devel libyaml-devel openssl-devel libcurl-devel
 cd .../bitdribble
 mkdir build && cd build && cmake3 ..
 make
-sudo make install
+cpack3 -G RPM
+sudo rpm -ivh bitd-<version>-<platform>.rpm
 ```
 
 And on ``Ubuntu 18.04``:
@@ -42,5 +43,13 @@ sudo apt-get install libexpat-dev libyaml-dev libssl-dev libcurl4-openssl-dev
 cd .../bitdribble
 mkdir build && cd build && cmake ..
 make
-sudo make install
+
+cpack -G DEB
+sudo rpm -ivh bitd-<version>-<platform>.rpm
+```
+
+And after setting test instance configuration in ``/etc/bitd-agent.yml`` according to details listed in the project documentation:
+```
+sudo systemctl enable bitd
+sudo systemctl start bitd
 ```
