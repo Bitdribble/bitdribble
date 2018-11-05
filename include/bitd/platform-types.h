@@ -66,6 +66,7 @@
 #define _bitd_assert assert
 
 /* The basic types */
+typedef void bitd_void;
 typedef signed char bitd_int8;
 typedef unsigned char bitd_uint8;
 typedef short bitd_int16;
