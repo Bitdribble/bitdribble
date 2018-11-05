@@ -1,6 +1,6 @@
 The bitd-agent
 ==============
-The bitd-agent is a dev/ops integration tool with the ability to run tasks on a schedule, and to create flows of triggered tasks where the output of a task instance can be used as input to one or more other task instances. The output of task instances can be sent to a Graphite or InfluxDB database back end, where it is visualized with Grafana dashboards.
+The bitd-agent is a dev/ops integration tool with the ability to schedule and run tasks, and to create flows of triggered tasks where the output of a task instance can be used as input to one or more other task instances. The output of task instances can be sent to a Graphite or InfluxDB database back end, where it is visualized with Grafana dashboards.
 
 Configuration for the bitd-agent can be set in ``yaml`` or ``xml`` format. The configuration file defines which task instances will be running, on what schedule, and which flows of triggered task instances are created. 
 
