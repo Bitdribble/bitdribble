@@ -1,4 +1,14 @@
 language: c
+
+matrix:
+  include:
+    - os: linux
+    - osx osx
+
+compiler:
+  - gcc
+  - clang
+
 addons:
   apt:
     sources:
@@ -6,7 +16,15 @@ addons:
     packages:
       - cmake-data
       - cmake
-script: mkdir build && cd build && cmake .. && make && make test
-compiler:
-  - clang
-  - gcc
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install expat libyaml openssl curl; fi
+
+script: 
+  - mkdir build
+  - cd build 
+  - cmake .. 
+  - make
+  - make test
+
