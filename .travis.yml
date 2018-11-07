@@ -3,11 +3,9 @@ language: c
 matrix:
   include:
     - os: linux
-      sudo: false
-
-compiler:
-  - gcc
-  - clang
+      compiler: gcc
+    - os: linux
+      compiler: clang
 
 addons:
   apt:
