@@ -17,9 +17,6 @@ addons:
       - cmake-data
       - cmake
 
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install expat libyaml openssl curl; fi
-
 script: 
   - mkdir build
   - cd build 
