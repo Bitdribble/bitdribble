@@ -3,7 +3,7 @@ language: c
 matrix:
   include:
     - os: linux
-    - osx: osx
+    - os: osx
 
 compiler:
   - gcc
