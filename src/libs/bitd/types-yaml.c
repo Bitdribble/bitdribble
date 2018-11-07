@@ -1296,7 +1296,7 @@ bitd_boolean bitd_yaml_parse(bitd_yaml_parser s,
 	    if (!event.data.scalar.tag) {
 		/* Convert to value and type */
 		bitd_string_to_type_and_value(&t, &v, 
-					    (char *)event.data.scalar.value);
+					      (char *)event.data.scalar.value);
 	    } else {
 		int idx = sizeof("tag:yaml.org,2002:") - 1;
 		

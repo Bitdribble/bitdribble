@@ -44,11 +44,33 @@ if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     # Check if it's Alpile Linux
     file(READ /etc/alpine-release LSB_RELEASE_VERSION)
     if (LSB_RELEASE_VERSION)
-      set(LSN_RELEASE_ID Alpine)
-      set(LSN_RELEASE_CODENAME alpine)
+      set(LSB_RELEASE_ID Alpine)
+      set(LSB_RELEASE_CODENAME alpine)
+    endif()
+  endif()
+  if (NOT LSB_RELEASE_ID)
+    # Check if it's OpenWRT Linux
+    file(READ /etc/openwrt_release LSB_RELEASE_VERSION)
+    if (LSB_RELEASE_VERSION)
+      set(LSB_RELEASE_ID OpenWRT)
+      set(LSB_RELEASE_CODENAME openwrt)
     endif()
   endif()
 endif()
+
+#
+# Supported platforms and how to detect them:
+# - Linux:                 if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+#   - Centos:              if ("${LSB_RELEASE_ID}" STREQUAL "CentOS")
+#   - Ubuntu:              if ("${LSB_RELEASE_ID}" STREQUAL "Ubuntu")
+#   - Alpine:              if ("${LSB_RELEASE_ID}" STREQUAL "Alpine")
+#   - Raspberry Pi:        if ("${LSB_RELEASE_ID}" STREQUAL "Raspbian")
+#   - OpenWRT:             if ("${LSB_RELEASE_ID}" STREQUAL "Raspbian")
+# - Mac OSX:               if (APPLE)
+# - Windows                if (WIN32)
+#   - Mingw
+#   - Cygwin               if (CMAKE_SYSTEM_NAME MATCHES "CYGWIN")
+#
 
 if (APPLE)
  # On OSX, set this variable to look up openssl in the right place
