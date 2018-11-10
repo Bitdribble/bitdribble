@@ -276,3 +276,15 @@ if (NOT BITD_HAVE_RANDOM AND NOT BITD_HAVE_RAND)
     message(FATAL_ERROR "srandom() or srand() not found.")
 endif()
 
+#
+# Check for symbols in utility libraries
+#
+check_function_exists(XML_ParserCreate BITD_HAVE_XML_PARSERCREATE)
+if (NOT BITD_HAVE_XML_PARSERCREATE)
+    message(FATAL_ERROR "XML_ParserCreate() not found. Libexpat not installed.")
+endif()
+
+check_function_exists(yaml_parser_parse BITD_HAVE_YAML_PARSER_PARSE)
+if (NOT BITD_HAVE_YAML_PARSER_PARSE)
+    message(FATAL_ERROR "yaml_parser_parse() not found. Libyaml not installed.")
+endif()
