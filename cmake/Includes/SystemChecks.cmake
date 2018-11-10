@@ -168,6 +168,34 @@ check_struct_has_member("struct sockaddr_in" sin_len
   "netinet/in.h" BITD_HAVE_STRUCT_SOCKADDR_IN_SIN_LEN)
 
 #
+# Support library headers
+#
+check_include_files(yaml.h BITD_HAVE_YAML_H)
+if (NOT BITD_HAVE_YAML_H)
+  message(FATAL_ERROR "yaml.h not found. Ensure libyaml development package is installed.")
+endif()
+
+check_include_files(expat.h BITD_HAVE_EXPAT_H)
+if (NOT BITD_HAVE_EXPAT_H)
+  message(FATAL_ERROR "expat.h not found. Ensure libexpat development package is installed.")
+endif()
+
+check_include_files(jansson.h BITD_HAVE_JANSSON_H)
+if (NOT BITD_HAVE_JANSSON_H)
+  message(FATAL_ERROR "jansson.h not found. Ensure libjansson development package is installed.")
+endif()
+
+check_include_files(curl/curl.h BITD_HAVE_CURL_H)
+if (NOT BITD_HAVE_CURL_H)
+  message(FATAL_ERROR "curl/curl.h not found. Ensure libcurl development package is installed.")
+endif()
+
+check_include_files(microhttpd.h BITD_HAVE_MICROHTTPD_H)
+if (NOT BITD_HAVE_MICROHTTPD_H)
+  message(FATAL_ERROR "microhttpd.h not found. Ensure libmicrohttpd development package is installed.")
+endif()
+
+#
 # System library setup
 #
 if (WIN32)

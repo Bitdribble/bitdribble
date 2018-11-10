@@ -97,6 +97,22 @@ else()
   set(LIBYAML_LIBRARIES yaml)  
 endif()
 
+# We depend on libjansson
+if (NOT WIN32 AND NOT OPENWRT)
+  include(FindJansson)
+  include_directories(${JANSSON_INCLUDE_DIR})
+else()
+  set(JANSSON_LIBRARIES jansson)
+endif()
+
+# We depend on libmicrohttpd
+if (NOT WIN32 AND NOT OPENWRT)
+  include(FindMicroHttpd)
+  include_directories(${MICROHTTPD_INCLUDE_DIR})
+else()
+  set(MICROHTTPD_LIBRARIES microhttpd)
+endif()
+
 if (NOT APPLE AND NOT WIN32 AND NOT OPENWRT)
   # Some modules depend on openssl
   include(FindOpenSSL)
