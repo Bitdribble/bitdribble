@@ -15,7 +15,6 @@
 #include "bitd/types.h"
 #include "bitd/pack.h"
 #include "bitd/file.h"
-#include "test-util.h"
 
 #include <errno.h>
 #include <ctype.h>

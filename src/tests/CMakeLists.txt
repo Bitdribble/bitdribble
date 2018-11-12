@@ -19,8 +19,6 @@ function(ttv_add_test name command)
   endif()
 endfunction()
 
-add_library(test-util STATIC test-util.c test-util.h) 
-
 # Test executables and dlls
 add_executable(test-dll test-dll.c)
 add_library(test-lib1 STATIC test-lib1.c)
@@ -49,10 +47,8 @@ add_executable(test-timer-thread test-timer-thread.c)
 add_executable(test-lambda test-lambda.c)
 
 add_executable(test-nvp-merge test-nvp-merge.c)
-target_link_libraries(test-nvp-merge test-util)
 
 add_executable(test-object test-object.c)
-target_link_libraries(test-object test-util)
 
 if (WIN32)
   # Ensure dlls do not use the 'lib' prefix when compiled on Cygwin mingw
