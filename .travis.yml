@@ -16,12 +16,16 @@ addons:
     packages:
       - cmake-data
       - cmake
+      - libjansson-dev
+      - libmicrohttpd-dev
   homebrew:
     packages:
       - expat 
       - libyaml
+      - jansson
       - openssl 
       - curl
+      - libmicrohttpd
 
 script: 
   - mkdir build
