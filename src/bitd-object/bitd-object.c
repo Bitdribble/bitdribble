@@ -265,8 +265,13 @@ int main(int argc, char **argv) {
 
     /* Parse command line parameters */
     while (argc) {
-        if (!strcmp(argv[0], "-ix") ||
-	    !strcmp(argv[0], "--input-xml")) {
+        if (!strcmp(argv[0], "-i") ||
+	    !strcmp(argv[0], "--input") ||
+	    !strcmp(argv[0], "-ix") ||
+	    !strcmp(argv[0], "--input-xml") ||
+	    !strcmp(argv[0], "-iy") ||
+	    !strcmp(argv[0], "--input-yaml")) {
+	    char *opt = argv[0];
 
             /* Skip to next parameter */
             argc--;
@@ -277,24 +282,27 @@ int main(int argc, char **argv) {
             }
 
 	    g_input_file = argv[0];
-	    g_input_xml = TRUE;
-	    g_input_yaml = FALSE;
-
-        } else if (!strcmp(argv[0], "-iy") ||
-		   !strcmp(argv[0], "--input-yaml")) {
-
-            /* Skip to next parameter */
-            argc--;
-            argv++;
-            
-            if (argc < 1) {
-                usage();
-            }
-
-	    g_input_file = argv[0];
-	    g_input_xml = FALSE;
-	    g_input_yaml = TRUE;
-
+	    
+	    if (!strcmp(opt, "-ix") ||
+		!strcmp(opt, "--input-xml")) {
+		g_input_xml = TRUE;
+		g_input_yaml = FALSE;
+	    } else if (!strcmp(opt, "-iy") ||
+		       !strcmp(opt, "--input-yaml")) {
+		g_input_xml = FALSE;
+		g_input_yaml = TRUE;
+	    } else {
+		/* Determine the config based on suffix */
+		char *suffix = bitd_get_filename_suffix(g_input_file);
+		
+		if (!suffix || !strcmp(suffix, "yaml")) {
+		    g_input_xml = FALSE;
+		    g_input_yaml = TRUE;
+		} else {
+		    g_input_xml = TRUE;
+		    g_input_yaml = FALSE;
+		}
+	    }
         } else if (!strcmp(argv[0], "-os") ||
 		   !strcmp(argv[0], "--output-string")) {
 
