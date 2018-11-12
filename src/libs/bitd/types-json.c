@@ -57,13 +57,13 @@ static char *escape_to_xml(char *s);
 
 /*
  *============================================================================
- *                        escape_to_xml
+ *                        escape_to_json
  *============================================================================
  * Description:     
  * Parameters:    
  * Returns:  
  */
-char *escape_to_xml(char *s) {
+char *escape_to_json(char *s) {
     char *s1;
     int len, idx, len1, idx1;
 
@@ -71,42 +71,33 @@ char *escape_to_xml(char *s) {
 	return NULL;
     }
 
-    len = strlen(s);
-    len1 = 6*len;
+    len = strlen(s) + 1;
+    len1 = 2*len;
 
     s1 = malloc(len1);
 
     for (idx = 0, idx1 = 0; s[idx]; idx++) {
-	if (s[idx] == '<') {
-	    s1[idx1++] = '&'; 
-	    s1[idx1++] = 'l'; 
+	if (s[idx] == '\b') {
+	    s1[idx1++] = '\\'; 
+	    s1[idx1++] = 'b'; 
+	} else if (s[idx] == '\f') {
+	    s1[idx1++] = '\\'; 
+	    s1[idx1++] = 'f'; 
+	} else if (s[idx] == '\n') {
+	    s1[idx1++] = '\\'; 
+	    s1[idx1++] = 'n'; 
+	} else if (s[idx] == '\r') {
+	    s1[idx1++] = '\\'; 
+	    s1[idx1++] = 'r'; 
+	} else if (s[idx] == '\t') {
+	    s1[idx1++] = '\\'; 
 	    s1[idx1++] = 't'; 
-	    s1[idx1++] = ';'; 
-	} else if (s[idx] == '>') {
-	    s1[idx1++] = '&'; 
-	    s1[idx1++] = 'g'; 
-	    s1[idx1++] = 't'; 
-	    s1[idx1++] = ';'; 
 	} else if (s[idx] == '"') {
-	    s1[idx1++] = '&'; 
-	    s1[idx1++] = 'q'; 
-	    s1[idx1++] = 'u'; 
-	    s1[idx1++] = 'o'; 
-	    s1[idx1++] = 't'; 
-	    s1[idx1++] = ';'; 
-	} else if (s[idx] == '\'') {
-	    s1[idx1++] = '&'; 
-	    s1[idx1++] = 'a'; 
-	    s1[idx1++] = 'p'; 
-	    s1[idx1++] = 'o'; 
-	    s1[idx1++] = 's'; 
-	    s1[idx1++] = ';'; 
-	} else if (s[idx] == '&') {
-	    s1[idx1++] = '&'; 
-	    s1[idx1++] = 'a'; 
-	    s1[idx1++] = 'm'; 
-	    s1[idx1++] = 'p'; 
-	    s1[idx1++] = ';'; 
+	    s1[idx1++] = '\\'; 
+	    s1[idx1++] = '"'; 
+	} else if (s[idx] == '\\') {
+	    s1[idx1++] = '\\'; 
+	    s1[idx1++] = '\\'; 
 	} else {
 	    s1[idx1++] = s[idx]; 
 	}
@@ -140,7 +131,7 @@ char *bitd_object_to_json(bitd_object_t *a,
     }
 
     /* This makes object_name heap allocated */
-    object_name = escape_to_xml(object_name);
+    object_name = escape_to_json(object_name);
 
     buf1 = bitd_object_to_xml_element(a, object_name, 0, full_xml);
 
@@ -189,7 +180,7 @@ char *bitd_object_to_json_element(bitd_object_t *a,
     }
 
     /* Escape the object name for xml. This will allocate it on the heap. */
-    object_name = escape_to_xml(object_name);
+    object_name = escape_to_json(object_name);
 
     /* Allocate and format the prefix */
     prefix = malloc(indentation + 1);
@@ -265,7 +256,7 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 	    /* Escape the value string for xml */
 	    {
 		char *c = value_str;
-		value_str = escape_to_xml(c);
+		value_str = escape_to_json(c);
 		free(c);
 	    }
 
