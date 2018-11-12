@@ -79,9 +79,7 @@ if (APPLE)
  endif()
 endif()
 
-# We depend on libexpat
 if (NOT WIN32 AND NOT OPENWRT)
-  include(FindEXPAT)
   find_package(EXPAT REQUIRED)
   include_directories(${EXPAT_INCLUDE_DIRS})
 else()
@@ -89,8 +87,6 @@ else()
 endif()
 
 if (NOT WIN32 AND NOT OPENWRT)
-  # We depend on libyaml - and provide our own module definition for it
-  include(FindLIBYAML)
   find_package(LIBYAML REQUIRED)
   include_directories(${LIBYAML_INCLUDE_DIR})
 else()
@@ -98,24 +94,15 @@ else()
 endif()
 
 # We depend on libjansson
-if (NOT WIN32 AND NOT OPENWRT)
-  include(FindJansson)
+if (NOT WIN32 AND NOT OPENWRT AND NOT APPLE)
+  find_package(Jansson REQUIRED)
   include_directories(${JANSSON_INCLUDE_DIR})
 else()
   set(JANSSON_LIBRARIES jansson)
 endif()
 
-# We depend on libmicrohttpd
-if (NOT WIN32 AND NOT OPENWRT)
-  include(FindMicroHttpd)
-  include_directories(${MICROHTTPD_INCLUDE_DIR})
-else()
-  set(MICROHTTPD_LIBRARIES microhttpd)
-endif()
-
 if (NOT APPLE AND NOT WIN32 AND NOT OPENWRT)
-  # Some modules depend on openssl
-  include(FindOpenSSL)
+#  include(FindOpenSSL)
   find_package(OpenSSL REQUIRED)
   include_directories(${OPENSSL_INCLUDE_DIR})
 
@@ -138,6 +125,14 @@ if (WIN32 OR OPENWRT)
    # Use the MinGW-w64 openssl and curl
    set(OPENSSL_LIBRARIES ssl crypto)
    set(CURL_LIBRARIES curl)
+endif()
+
+# We depend on libmicrohttpd
+if (NOT WIN32 AND NOT OPENWRT AND NOT APPLE)
+  find_package(MicroHttpd REQUIRED)
+  include_directories(${MICROHTTPD_INCLUDE_DIR})
+else()
+  set(MICROHTTPD_LIBRARIES microhttpd)
 endif()
 
 #

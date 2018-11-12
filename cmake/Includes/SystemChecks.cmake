@@ -212,7 +212,7 @@ if (CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_USE_WIN32_THREADS_INIT)
 endif()
 
 # Append the expat and libyaml libraries
-set(BITD_LIBRARIES ${BITD_LIBRARIES} ${EXPAT_LIBRARIES} ${LIBYAML_LIBRARIES})
+set(BITD_LIBRARIES ${BITD_LIBRARIES} ${EXPAT_LIBRARIES} ${LIBYAML_LIBRARIES} ${JANSSON_LIBRARIES})
 set(CMAKE_REQUIRED_LIBRARIES ${BITD_LIBRARIES})
 
 #message("BITD_LIBRARIES = ${BITD_LIBRARIES}")
@@ -287,4 +287,22 @@ endif()
 check_function_exists(yaml_parser_parse BITD_HAVE_YAML_PARSER_PARSE)
 if (NOT BITD_HAVE_YAML_PARSER_PARSE)
     message(FATAL_ERROR "yaml_parser_parse() not found. Libyaml not installed.")
+endif()
+
+check_function_exists(json_load_file BITD_HAVE_JSON_LOAD_FILE)
+if (NOT BITD_HAVE_JSON_LOAD_FILE)
+    message(FATAL_ERROR "json_load_file() not found. Libjansson not installed.")
+endif()
+
+# Change the CMAKE_REQUIRED_LIBRARIES to target specific util libraries
+set(CMAKE_REQUIRED_LIBRARIES ${CURL_LIBRARIES})
+check_function_exists(curl_easy_init BITD_HAVE_CURL_EASY_INIT)
+if (NOT BITD_HAVE_CURL_EASY_INIT)
+    message(FATAL_ERROR "curl_easy_init() not found. Libcurl not installed.")
+endif()
+
+set(CMAKE_REQUIRED_LIBRARIES ${MICROHTTPD_LIBRARIES})
+check_function_exists(MHD_start_daemon BITD_HAVE_MHD_START_DAEMON)
+if (NOT BITD_HAVE_MHD_START_DAEMON)
+    message(FATAL_ERROR "MHD_start_daemon() not found. Libmicrohttpd not installed.")
 endif()
