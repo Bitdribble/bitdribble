@@ -94,7 +94,7 @@ else()
 endif()
 
 # We depend on libjansson
-if (NOT WIN32 AND NOT OPENWRT AND NOT APPLE)
+if (NOT WIN32 AND NOT OPENWRT)
   find_package(Jansson REQUIRED)
   include_directories(${JANSSON_INCLUDE_DIR})
 else()
@@ -128,7 +128,7 @@ if (WIN32 OR OPENWRT)
 endif()
 
 # We depend on libmicrohttpd
-if (NOT WIN32 AND NOT OPENWRT AND NOT APPLE)
+if (NOT WIN32 AND NOT OPENWRT)
   find_package(MicroHttpd REQUIRED)
   include_directories(${MICROHTTPD_INCLUDE_DIR})
 else()
