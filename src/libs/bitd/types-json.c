@@ -142,11 +142,9 @@ char *bitd_object_to_json(bitd_object_t *a,
     /* This makes object_name heap allocated */
     object_name = escape_to_xml(object_name);
 
-    /* Buffer auto-allocated inside snprintf_w_realloc() */
-    snprintf_w_realloc(&buf, &size, &idx,
-		       "<?xml version='1.0'?>\n");
-
     buf1 = bitd_object_to_xml_element(a, object_name, 0, full_xml);
+
+    /* Buffer auto-allocated inside snprintf_w_realloc() */
     snprintf_w_realloc(&buf, &size, &idx,
 		       "%s", buf1);
     free(buf1);
