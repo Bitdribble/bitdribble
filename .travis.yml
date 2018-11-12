@@ -22,8 +22,10 @@ addons:
     packages:
       - expat 
       - libyaml
+      - jansson
       - openssl 
       - curl
+      - libmicrohttpd
 
 script: 
   - mkdir build
