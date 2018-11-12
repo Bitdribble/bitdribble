@@ -582,6 +582,12 @@ int main(int argc, char **argv) {
 	    goto end;
 	}
 
+	if (g_output_json) {
+	    buf = bitd_object_to_json(&a, g_full_output);
+	    fprintf(f, "%s\n", buf);
+	    free(buf);
+	}
+	
 	if (g_output_string) {
 	    buf = bitd_object_to_string(&a);
 	    fprintf(f, "%s\n", buf);

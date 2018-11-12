@@ -223,6 +223,17 @@ extern void bitd_object_to_buffer(char **buf, int *buf_nbytes,
 				  bitd_buffer_type_t buffer_type);
 
 /*
+ * Json apis
+ */
+/* Convert object to xml */
+extern char *bitd_object_to_json(bitd_object_t *a,
+				 bitd_boolean full_xml);
+
+extern char *bitd_object_to_json_element(bitd_object_t *a,
+					 int indentation, /* How much to indent */
+					 bitd_boolean full_xml);
+
+/*
  * Xml apis
  */
 
