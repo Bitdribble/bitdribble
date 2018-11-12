@@ -298,12 +298,12 @@ int main(int argc, char **argv) {
 		/* Determine the config based on suffix */
 		char *suffix = bitd_get_filename_suffix(g_input_file);
 		
-		if (!suffix || !strcmp(suffix, "yaml")) {
-		    g_input_xml = FALSE;
-		    g_input_yaml = TRUE;
-		} else {
+		if (suffix && !strcmp(suffix, "xml")) {
 		    g_input_xml = TRUE;
 		    g_input_yaml = FALSE;
+		} else {
+		    g_input_xml = FALSE;
+		    g_input_yaml = TRUE;
 		}
 	    }
         } else if (!strcmp(argv[0], "-oj") ||
