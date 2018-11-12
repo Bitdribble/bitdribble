@@ -77,19 +77,22 @@ static bitd_boolean g_sort = FALSE;
 void usage() {
 
     printf("\nUsage: %s [OPTIONS ... ]\n\n", g_prog_name);
-    printf("This program tests object => xml and yaml conversion.\n\n");
+    printf("This program tests conversion between objects in xml and yaml format.\n\n");
 
     printf("Options:\n"
+           "    -i|--input input_file.{xml|yml|yaml}\n"
+           "       Input file. Format is determined from file suffix.\n"
+	   "       Default format is yaml.\n"
            "    -ix|--input-xml input_file\n"
-           "       File containing the object in xml format. Can use stdin.\n"
+           "       Input file, in xml format. Can use stdin.\n"
            "    -iy|--input-yaml input_file\n"
-           "       File containing the object in yaml format. Can use stdin.\n"
+           "       Input file, in yaml format. Can use stdin.\n"
            "    -os|--output-string output_file\n"
-           "       Output file for the object in string format. Can use stdout.\n"
+           "       Output file, in string format. Can use stdout.\n"
            "    -ox|--output-xml output_file\n"
-           "       Output file for the object in xml format. Can use stdout.\n"
+           "       Output file, in xml format. Can use stdout.\n"
            "    -oy|--output-yaml output_file\n"
-           "       Output file for the object in yaml format. Can use stdout.\n"
+           "       Output file, in yaml format. Can use stdout.\n"
            "    -ose|--output-string-expected output_file\n"
            "       Expected output in string format.\n"
            "    -oxe|--output-xml-expected output_file\n"
