@@ -306,6 +306,24 @@ int main(int argc, char **argv) {
 		    g_input_yaml = FALSE;
 		}
 	    }
+        } else if (!strcmp(argv[0], "-oj") ||
+		   !strcmp(argv[0], "--output-json")) {
+
+            /* Skip to next parameter */
+            argc--;
+            argv++;
+            
+            if (argc < 1) {
+                usage();
+            }
+
+	    g_output_file = argv[0];
+
+	    g_output_json = TRUE;
+	    g_output_string = FALSE;
+	    g_output_xml = FALSE;
+	    g_output_yaml = FALSE;
+
         } else if (!strcmp(argv[0], "-os") ||
 		   !strcmp(argv[0], "--output-string")) {
 
