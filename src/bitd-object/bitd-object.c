@@ -50,7 +50,8 @@ static char* g_prog_name = "";
 static char* g_input_file;
 static bitd_boolean g_input_xml = TRUE, g_input_yaml;
 static char* g_output_file = NULL;
-static bitd_boolean g_output_string, g_output_xml, g_output_yaml;
+static bitd_boolean g_output_json, g_output_string, g_output_xml, g_output_yaml;
+static char* g_output_json_expected = NULL;
 static char* g_output_string_expected = NULL;
 static char* g_output_xml_expected = NULL;
 static char* g_output_yaml_expected = NULL;
@@ -93,6 +94,8 @@ void usage() {
            "       Output file, in xml format. Can use stdout.\n"
            "    -oy|--output-yaml output_file\n"
            "       Output file, in yaml format. Can use stdout.\n"
+           "    -oje|--output-json-expected output_file\n"
+           "       Expected output in json format.\n"
            "    -ose|--output-string-expected output_file\n"
            "       Expected output in string format.\n"
            "    -oxe|--output-xml-expected output_file\n"
@@ -316,6 +319,7 @@ int main(int argc, char **argv) {
 
 	    g_output_file = argv[0];
 
+	    g_output_json = FALSE;
 	    g_output_string = TRUE;
 	    g_output_xml = FALSE;
 	    g_output_yaml = FALSE;
@@ -333,6 +337,7 @@ int main(int argc, char **argv) {
 
 	    g_output_file = argv[0];
 
+	    g_output_json = FALSE;
 	    g_output_string = FALSE;
 	    g_output_xml = TRUE;
 	    g_output_yaml = FALSE;
@@ -350,9 +355,23 @@ int main(int argc, char **argv) {
 
 	    g_output_file = argv[0];
 
+	    g_output_json = FALSE;
 	    g_output_string = FALSE;
 	    g_output_xml = FALSE;
 	    g_output_yaml = TRUE;
+
+        } else if (!strcmp(argv[0], "-oje") ||
+		   !strcmp(argv[0], "--output-json-expected")) {
+
+            /* Skip to next parameter */
+            argc--;
+            argv++;
+            
+            if (argc < 1) {
+                usage();
+            }
+
+	    g_output_json_expected = argv[0];
 
         } else if (!strcmp(argv[0], "-ose") ||
 		   !strcmp(argv[0], "--output-string-expected")) {
