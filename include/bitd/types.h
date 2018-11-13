@@ -225,15 +225,35 @@ extern void bitd_object_to_buffer(char **buf, int *buf_nbytes,
 /*
  * Json apis
  */
-/* Convert object to xml */
+/* Convert object to json */
 extern char *bitd_object_to_json(bitd_object_t *a,
 				 bitd_boolean compressed,
 				 bitd_boolean full_xml);
 
+
+/* Convert object to element of json */
 extern char *bitd_object_to_json_element(bitd_object_t *a,
 					 int indentation, /* How much to indent */
 					 bitd_boolean full_json,
-					 bitd_boolean compressed_json);
+					 bitd_boolean single_line_json);
+
+/* Convert nvp to json */
+extern char *bitd_nvp_to_json(bitd_nvp_t nvp,
+			      bitd_boolean compressed,
+			      bitd_boolean full_xml);
+
+/* Convert json to object */
+bitd_boolean bitd_json_to_object(bitd_object_t *a, 
+				 char *json, int json_nbytes,
+				 char *err_buf,
+				 int err_len);
+
+/* Convert json to nvp */
+bitd_boolean bitd_json_to_nvp(bitd_nvp_t *nvp, 
+			      char *json, int json_nbytes,
+			      char *err_buf,
+			      int err_len);
+
 
 /*
  * Xml apis

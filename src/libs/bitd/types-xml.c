@@ -656,9 +656,9 @@ static void xml_end(void *data, const XML_Char *el) {
 	
 	/* Add the object to the higher nvp */
 	bitd_nvp_add_elem(&(u->prev->object.v.value_nvp), 
-			name, 
-			&u->object.v, 
-			u->object.type);
+			  name, 
+			  &u->object.v, 
+			  u->object.type);
 
     } else {
 	/* At depth 1, simply copy the object */
