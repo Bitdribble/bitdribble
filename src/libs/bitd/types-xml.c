@@ -621,7 +621,7 @@ static void xml_end(void *data, const XML_Char *el) {
 	if (u->object.type != bitd_type_nvp) {
 	    /* Convert string value */
 	    if (!bitd_typed_string_to_object(&u->object, u->value_str, 
-					   u->object.type)) {
+					     u->object.type)) {
 		u->s->error_str = xml_error("Invalid element '%s' value '%s'",
 					    u->name, 
 					    u->value_str ? u->value_str : "NULL");
