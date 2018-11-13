@@ -467,4 +467,59 @@ bitd_boolean bitd_json_to_nvp(bitd_nvp_t *nvp,
  * Returns:  
  */
 void bitd_json_elem_to_nvp(bitd_nvp_t *nvp, json_t *elem) {
+    int jtype, jtype_value;
+    void *iter;
+    char *key;
+    bitd_value_t v;
+    bitd_type_t type;
+
+    jtype = json_typeof(elem);
+
+    if (jtype == JSON_OBJECT) {
+	iter = json_object_iter(elem);
+	while (iter) {
+	    json_t *value;
+
+	    key = (char *)json_object_iter_key(iter);
+	    value = json_object_iter_value(iter);
+
+	    jtype_value = json_typeof(value);
+	    switch (jtype_value) {
+	    case JSON_NULL:
+		type = bitd_type_void;
+		break;
+	    case JSON_TRUE:
+		v.value_boolean = TRUE;
+		type = bitd_type_boolean;
+		break;
+	    case JSON_FALSE:
+		v.value_boolean = FALSE;
+		type = bitd_type_boolean;
+		break;
+	    case JSON_INTEGER:
+		v.value_int64 = json_integer_value(value);
+		type = bitd_type_int64;
+		break;
+	    case JSON_REAL:
+		v.value_double = json_real_value(value);
+		type = bitd_type_double;
+		break;
+	    case JSON_STRING:
+		v.value_string = (char *)json_string_value(value);
+		type = bitd_type_string;
+		break;
+	    default:
+		type = bitd_type_void;
+	    }
+	    
+	    /* Add the object to the higher nvp */
+	    bitd_nvp_add_elem(nvp, 
+			      key, 
+			      &v, 
+			      type);
+	
+	    /* Get the next element */
+	    iter = json_object_iter_next(elem, iter);
+	}
+    }
 }
