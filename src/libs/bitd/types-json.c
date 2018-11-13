@@ -148,29 +148,6 @@ char *bitd_object_to_json(bitd_object_t *a,
 
 /*
  *============================================================================
- *                        bitd_nvp_to_json
- *============================================================================
- * Description:     Convert nvp to json buffer
- * Parameters:    
- *     nvp - the nvp to be converted
- *     full_json - append _!!<type> to the label names to determine type
- *     single_line_json - print the json buffer on a single line
- * Returns:  
- *     Heap-allocated buffer containing the json buffer
- */
-char *bitd_nvp_to_json(bitd_nvp_t nvp,
-		       bitd_boolean full_json,
-		       bitd_boolean single_line_json) {
-    bitd_object_t a;
-
-    a.type = bitd_type_nvp;
-    a.v.value_nvp = nvp;
-
-    return bitd_object_to_json(&a, full_json, single_line_json);
-}
-
-/*
- *============================================================================
  *                        bitd_object_to_json_element
  *============================================================================
  * Description:     Convert object to an element of json. Nvps are converted
@@ -355,4 +332,27 @@ char *bitd_object_to_json_element(bitd_object_t *a,
     return buf;
 }
 
+
+/*
+ *============================================================================
+ *                        bitd_nvp_to_json
+ *============================================================================
+ * Description:     Convert nvp to json buffer
+ * Parameters:    
+ *     nvp - the nvp to be converted
+ *     full_json - append _!!<type> to the label names to determine type
+ *     single_line_json - print the json buffer on a single line
+ * Returns:  
+ *     Heap-allocated buffer containing the json buffer
+ */
+char *bitd_nvp_to_json(bitd_nvp_t nvp,
+		       bitd_boolean full_json,
+		       bitd_boolean single_line_json) {
+    bitd_object_t a;
+
+    a.type = bitd_type_nvp;
+    a.v.value_nvp = nvp;
+
+    return bitd_object_to_json(&a, full_json, single_line_json);
+}
 
