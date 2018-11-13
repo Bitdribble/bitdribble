@@ -41,6 +41,7 @@
  *                           FUNCTION DECLARATION
  *****************************************************************************/
 static char *escape_to_json(char *s);
+static void bitd_json_elem_to_nvp(bitd_nvp_t *nvp, json_t *elem);
 
 
 
@@ -443,8 +444,27 @@ bitd_boolean bitd_json_to_nvp(bitd_nvp_t *nvp,
         return FALSE;
     }
 
+    /* Convert the root element */
+    bitd_json_elem_to_nvp(nvp, jroot);
+
     /* Release the json object */
     json_decref(jroot);
 
     return TRUE;
+}
+
+
+
+/*
+ *============================================================================
+ *                        bitd_json_elem_to_nvp
+ *============================================================================
+ * Description:     Convert json element to nvp. The nvp may have preallocated
+ *    elements, in which case the new element is added at the end.
+ * Parameters:    
+ *     nvp [IN/OUT] - This nvp will be updated with the converted json element
+ *     elem - The json element
+ * Returns:  
+ */
+void bitd_json_elem_to_nvp(bitd_nvp_t *nvp, json_t *elem) {
 }
