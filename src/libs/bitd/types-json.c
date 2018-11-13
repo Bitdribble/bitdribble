@@ -221,9 +221,7 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 
 	if (!is_block) {
 	    /* A json sequence */
-	    snprintf_w_realloc(&buf, &size, &idx,
-			       "%s[", 
-			       prefix);
+	    snprintf_w_realloc(&buf, &size, &idx, "[\n");
 	    for (i = 0; i < n_elts; i++) {		    
 		bitd_object_t a1;
 		
@@ -241,14 +239,14 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 		value_str = NULL;
 		if (i < n_elts - 1) {
 		    snprintf_w_realloc(&buf, &size, &idx, ",\n");
+		} else {
+		    snprintf_w_realloc(&buf, &size, &idx, ",\n");
 		}
 	    } 
-	    snprintf_w_realloc(&buf, &size, &idx, "]\n");
+	    snprintf_w_realloc(&buf, &size, &idx, "%s]\n", prefix);
 	} else {
 	    /* A json block */	    
-	    snprintf_w_realloc(&buf, &size, &idx,
-			       "%s{", 
-			       prefix);
+	    snprintf_w_realloc(&buf, &size, &idx, "{\n");
 	    for (i = 0; i < n_elts; i++) {		    
 		bitd_object_t a1;
 		
@@ -284,9 +282,11 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 		value_str = NULL;
 		if (i < n_elts - 1) {
 		    snprintf_w_realloc(&buf, &size, &idx, ",\n");
+		} else {
+		    snprintf_w_realloc(&buf, &size, &idx, "\n");
 		}
 	    }
-	    snprintf_w_realloc(&buf, &size, &idx, "}\n");
+	    snprintf_w_realloc(&buf, &size, &idx, "%s}\n", prefix);
 	}
 
     }
