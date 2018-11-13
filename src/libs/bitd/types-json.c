@@ -205,6 +205,9 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 	if ((a->type == bitd_type_uint64 && a->v.value_uint64 > LONG_MAX) ||
 	    a->type == bitd_type_string || 
 	    a->type == bitd_type_blob) {
+	    /* Jansson can't parse numbers larger than LONG_MAX. The solution
+	       is to write them as strings, appending _!!uint64 to the label,
+	       which makes us parse it back as uint64 instead of string. */
 	    snprintf_w_realloc(&buf, &size, &idx, "\"%s\"", value_str);
 	} else {
 	    snprintf_w_realloc(&buf, &size, &idx, "%s", value_str);
@@ -281,6 +284,10 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 		if (full_json || 
 		    (a1.type == bitd_type_uint64 && a1.v.value_uint64 > LONG_MAX) ||
 		    a1.type == bitd_type_blob) {
+		    /* Jansson can't parse numbers larger than LONG_MAX. 
+		       The solution is to write them as strings, appending 
+		       _!!uint64 to the label, which makes us parse it back
+		       as uint64 instead of string. */
 		    snprintf_w_realloc(&buf, &size, &idx,
 				       "%s%s\"%s_!!%s\":%s", 
 				       prefix, 
