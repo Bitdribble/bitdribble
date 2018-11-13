@@ -134,7 +134,8 @@ char *bitd_object_to_json(bitd_object_t *a,
 
     /* Buffer auto-allocated inside snprintf_w_realloc() */
     snprintf_w_realloc(&buf, &size, &idx,
-		       "%s\n", buf1);
+		       "%s%s", buf1, 
+		       compressed_json ? "" : "\n");
     free(buf1);
 
     return buf;
@@ -159,6 +160,11 @@ char *bitd_object_to_json_element(bitd_object_t *a,
     char *value_str = NULL;
 
     bitd_assert(indentation >= 0);
+
+    if (compressed_json) {
+	/* Cancel the indentation*/
+	indentation = 0;
+    }
 
     /* Allocate and format the prefix */
     prefix = malloc(indentation + 1);
@@ -212,7 +218,8 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 
 	if (!is_block) {
 	    /* A json sequence */
-	    snprintf_w_realloc(&buf, &size, &idx, "[\n");
+	    snprintf_w_realloc(&buf, &size, &idx, "[%s",
+			       compressed_json ? "" : "\n");
 	    for (i = 0; i < n_elts; i++) {		    
 		bitd_object_t a1;
 		
@@ -223,22 +230,30 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 							indentation + 2,
 							full_json,
 							compressed_json);
-		snprintf_w_realloc(&buf, &size, &idx,
-				   "%s  %s", prefix, value_str);
+		if (compressed_json) {
+		    snprintf_w_realloc(&buf, &size, &idx,
+				       "%s", value_str);
+		} else {
+		    snprintf_w_realloc(&buf, &size, &idx,
+				       "%s  %s", prefix, value_str);
+		}
 		if (value_str) {
 		    free(value_str);
 		}
 		value_str = NULL;
 		if (i < n_elts - 1) {
-		    snprintf_w_realloc(&buf, &size, &idx, ",\n");
+		    snprintf_w_realloc(&buf, &size, &idx, ",%s",
+				       compressed_json ? "" : "\n");
 		} else {
-		    snprintf_w_realloc(&buf, &size, &idx, "\n");
+		    snprintf_w_realloc(&buf, &size, &idx, "%s",
+				       compressed_json ? "" : "\n");
 		}
 	    } 
 	    snprintf_w_realloc(&buf, &size, &idx, "%s]", prefix);
 	} else {
 	    /* A json block */	    
-	    snprintf_w_realloc(&buf, &size, &idx, "{\n");
+	    snprintf_w_realloc(&buf, &size, &idx, "{%s",
+			       compressed_json ? "" : "\n");
 	    for (i = 0; i < n_elts; i++) {		    
 		bitd_object_t a1;
 		
@@ -252,13 +267,19 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 
 		if (full_json || a1.type == bitd_type_blob) {
 		    snprintf_w_realloc(&buf, &size, &idx,
-				       "%s  \"%s_!!%s\": ", 
-				       prefix, value_str, 
-				       bitd_get_type_name(a1.type));
+				       "%s%s\"%s_!!%s\":%s", 
+				       prefix, 
+				       compressed_json ? "" : "  ",
+				       value_str, 
+				       bitd_get_type_name(a1.type),
+				       compressed_json ? "" : " ");
 		} else {
 		    snprintf_w_realloc(&buf, &size, &idx,
-				       "%s  \"%s\": ", 
-				       prefix, value_str);
+				       "%s%s\"%s\":%s", 
+				       prefix, 
+				       compressed_json ? "" : "  ",
+				       value_str,
+				       compressed_json ? "" : " ");
 		}
 
 		free(value_str);
@@ -274,9 +295,11 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 		}
 		value_str = NULL;
 		if (i < n_elts - 1) {
-		    snprintf_w_realloc(&buf, &size, &idx, ",\n");
+		    snprintf_w_realloc(&buf, &size, &idx, ",%s",
+				       compressed_json ? "" : "\n");
 		} else {
-		    snprintf_w_realloc(&buf, &size, &idx, "\n");
+		    snprintf_w_realloc(&buf, &size, &idx, "%s",
+				       compressed_json ? "" : "\n");
 		}
 	    }
 	    snprintf_w_realloc(&buf, &size, &idx, "%s}", prefix);
