@@ -247,11 +247,11 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 		    value_str = strdup("");
 		}
 
-		if (full_json) {
+		if (full_json || a1.type == bitd_type_blob) {
 		    snprintf_w_realloc(&buf, &size, &idx,
 				       "%s  \"%s_!!%s\": ", 
 				       prefix, value_str, 
-				       bitd_get_type_name(a->type));
+				       bitd_get_type_name(a1.type));
 		} else {
 		    snprintf_w_realloc(&buf, &size, &idx,
 				       "%s  \"%s\": ", 
