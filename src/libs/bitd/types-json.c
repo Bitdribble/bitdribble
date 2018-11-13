@@ -243,7 +243,7 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 		    snprintf_w_realloc(&buf, &size, &idx, "\n");
 		}
 	    } 
-	    snprintf_w_realloc(&buf, &size, &idx, "%s]\n", prefix);
+	    snprintf_w_realloc(&buf, &size, &idx, "%s]", prefix);
 	} else {
 	    /* A json block */	    
 	    snprintf_w_realloc(&buf, &size, &idx, "{\n");
@@ -260,12 +260,12 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 
 		if (full_json) {
 		    snprintf_w_realloc(&buf, &size, &idx,
-				       "%s\"%s_!!%s\": ", 
+				       "%s  \"%s_!!%s\": ", 
 				       prefix, value_str, 
 				       bitd_get_type_name(a->type));
 		} else {
 		    snprintf_w_realloc(&buf, &size, &idx,
-				       "%s\"%s\": ", 
+				       "%s  \"%s\": ", 
 				       prefix, value_str);
 		}
 
@@ -286,7 +286,7 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 		    snprintf_w_realloc(&buf, &size, &idx, "\n");
 		}
 	    }
-	    snprintf_w_realloc(&buf, &size, &idx, "%s}\n", prefix);
+	    snprintf_w_realloc(&buf, &size, &idx, "%s}", prefix);
 	}
 
     }
