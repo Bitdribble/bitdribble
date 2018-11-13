@@ -119,7 +119,8 @@ char *escape_to_json(char *s) {
  * Returns:  
  */
 char *bitd_object_to_json(bitd_object_t *a,
-			  bitd_boolean full_json) {
+			  bitd_boolean full_json,
+			  bitd_boolean compressed_json) {
     char *buf = NULL, *buf1;
     int size = 0, idx = 0;
     
@@ -129,11 +130,11 @@ char *bitd_object_to_json(bitd_object_t *a,
 	return NULL;
     }
 
-    buf1 = bitd_object_to_json_element(a, 0, full_json);
+    buf1 = bitd_object_to_json_element(a, 0, full_json, compressed_json);
 
     /* Buffer auto-allocated inside snprintf_w_realloc() */
     snprintf_w_realloc(&buf, &size, &idx,
-		       "%s", buf1);
+		       "%s\n", buf1);
     free(buf1);
 
     return buf;
@@ -150,7 +151,8 @@ char *bitd_object_to_json(bitd_object_t *a,
  */
 char *bitd_object_to_json_element(bitd_object_t *a,
 				  int indentation, /* How much to indent */
-				  bitd_boolean full_json) {
+				  bitd_boolean full_json,
+				  bitd_boolean compressed_json) {
     char *buf = NULL;
     int size = 0, idx = 0, i;
     char *prefix;
@@ -219,7 +221,8 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 		
 		value_str = bitd_object_to_json_element(&a1, 
 							indentation + 2,
-							full_json);
+							full_json,
+							compressed_json);
 		snprintf_w_realloc(&buf, &size, &idx,
 				   "%s  %s", prefix, value_str);
 		if (value_str) {
@@ -262,7 +265,8 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 
 		value_str = bitd_object_to_json_element(&a1, 
 							indentation + 2,
-							full_json);
+							full_json,
+							compressed_json);
 		snprintf_w_realloc(&buf, &size, &idx,
 				   "%s", value_str);
 		if (value_str) {
