@@ -171,39 +171,28 @@ char *bitd_object_to_json_element(bitd_object_t *a,
     }
 
     if (a->type == bitd_type_void) {
-	snprintf_w_realloc(&buf, &size, &idx,
-			   "%snull", 
-			   prefix);
+	snprintf_w_realloc(&buf, &size, &idx, "null");
     } else if (a->type == bitd_type_boolean) {
-	snprintf_w_realloc(&buf, &size, &idx,
-			   "%s%s", 
-			   prefix, a->v.value_boolean ? "true" : "false");
+	snprintf_w_realloc(&buf, &size, &idx, "%s", 
+			   a->v.value_boolean ? "true" : "false");
     } else if (a->type == bitd_type_string &&
 	       !a->v.value_string) {
-	snprintf_w_realloc(&buf, &size, &idx,
-			   "%snull", 
-			   prefix);
+	snprintf_w_realloc(&buf, &size, &idx, "null");
     } else if (a->type != bitd_type_nvp) {
 	/* Get the value in string form */
 	value_str = bitd_value_to_string(&a->v, a->type);
 
 	if (a->type == bitd_type_string || 
 	    a->type == bitd_type_blob) {
-	    snprintf_w_realloc(&buf, &size, &idx,
-			       "%s\"%s\"",
-			       prefix, value_str);
+	    snprintf_w_realloc(&buf, &size, &idx, "\"%s\"", value_str);
 	} else {
-	    snprintf_w_realloc(&buf, &size, &idx,
-			       "%s%s",
-			       prefix, value_str);
+	    snprintf_w_realloc(&buf, &size, &idx, "%s", value_str);
 	}
 	free(value_str);
 	value_str = NULL;
     } else if (!a->v.value_nvp || !a->v.value_nvp->n_elts) {
 	/* The empty NVP case */
-	snprintf_w_realloc(&buf, &size, &idx,
-			   "%s{}",
-			   prefix);
+	snprintf_w_realloc(&buf, &size, &idx, "{}");
     } else {
 	/* The non-empty NVP case */
 	int n_elts = a->v.value_nvp->n_elts;
@@ -232,7 +221,7 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 							indentation + 2,
 							full_json);
 		snprintf_w_realloc(&buf, &size, &idx,
-				   "%s", value_str);
+				   "%s  %s", prefix, value_str);
 		if (value_str) {
 		    free(value_str);
 		}
