@@ -133,7 +133,7 @@ char *bitd_object_to_json(bitd_object_t *a,
 
     /* Buffer auto-allocated inside snprintf_w_realloc() */
     snprintf_w_realloc(&buf, &size, &idx,
-		       "%s\n", buf1);
+		       "%s", buf1);
     free(buf1);
 
     return buf;
@@ -277,7 +277,6 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 	    }
 	    snprintf_w_realloc(&buf, &size, &idx, "%s}", prefix);
 	}
-
     }
 
     /* NULL termination for buffer */
