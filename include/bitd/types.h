@@ -233,7 +233,7 @@ extern char *bitd_object_to_json(bitd_object_t *a,
 extern char *bitd_object_to_json_element(bitd_object_t *a,
 					 int indentation, /* How much to indent */
 					 bitd_boolean full_json,
-					 bitd_boolean compressed_json);
+					 bitd_boolean single_line_json);
 
 /*
  * Xml apis
