@@ -144,6 +144,25 @@ char *bitd_object_to_json(bitd_object_t *a,
 
 /*
  *============================================================================
+ *                        bitd_nvp_to_json
+ *============================================================================
+ * Description:     
+ * Parameters:    
+ * Returns:  
+ */
+char *bitd_nvp_to_json(bitd_nvp_t nvp,
+		       bitd_boolean full_json,
+		       bitd_boolean single_line_json) {
+    bitd_object_t a;
+
+    a.type = bitd_type_nvp;
+    a.v.value_nvp = nvp;
+
+    return bitd_object_to_json(&a, full_json, single_line_json);
+}
+
+/*
+ *============================================================================
  *                        bitd_object_to_json_element
  *============================================================================
  * Description:     
