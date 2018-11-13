@@ -55,7 +55,7 @@ static char* g_output_json_expected = NULL;
 static char* g_output_string_expected = NULL;
 static char* g_output_xml_expected = NULL;
 static char* g_output_yaml_expected = NULL;
-static bitd_boolean g_compressed_output = FALSE;
+static bitd_boolean g_single_line_output = FALSE;
 static bitd_boolean g_full_output = FALSE;
 static int g_chunk_size = CHUNK_SIZE_DEF;
 static bitd_boolean g_pack = FALSE;
@@ -105,8 +105,8 @@ void usage() {
            "       Expected output in yaml format.\n"
 	   "    -fo|--full-output\n"
 	   "       Full output file (not skipping default attributes).\n"
-	   "    -co|--compressed-output\n"
-	   "       Compressed output file (no newlines). Supported for json output only.\n"
+	   "    -slo|--single-line-output\n"
+	   "       Print the output on a single line (for json output only).\n"
 	   "    -s|--chunk-size size\n"
 	   "       Parse in this chunk size. Default: %d.\n"
 	   "    -p|--pack\n"
@@ -438,10 +438,10 @@ int main(int argc, char **argv) {
 
 	    g_full_output = TRUE;
 
-        } else if (!strcmp(argv[0], "-co")||
-		   !strcmp(argv[0], "--compressed-output")) {
+        } else if (!strcmp(argv[0], "-slo")||
+		   !strcmp(argv[0], "--single-line-output")) {
 
-	    g_compressed_output = TRUE;
+	    g_single_line_output = TRUE;
 
         } else if (!strcmp(argv[0], "-s") ||
 		   !strcmp(argv[0], "--chunk-size")) {
@@ -591,7 +591,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (g_output_json) {
-	    buf = bitd_object_to_json(&a, g_full_output, g_compressed_output);
+	    buf = bitd_object_to_json(&a, g_full_output, g_single_line_output);
 	    fprintf(f, "%s", buf);
 	    free(buf);
 	}
