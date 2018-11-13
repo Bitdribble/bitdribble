@@ -414,8 +414,8 @@ char *bitd_object_to_xml_element(bitd_object_t *a,
  * Returns:  
  */
 char *bitd_nvp_to_xml(bitd_nvp_t nvp, 
-		    char *nvp_name,
-		    bitd_boolean full_xml) {
+		      char *nvp_name,
+		      bitd_boolean full_xml) {
     bitd_object_t a;
 
     a.type = bitd_type_nvp;

@@ -27,6 +27,7 @@ add_library(bitd SHARED
             tstamp.c
             types.c
             types-assert.c
+            types-json.c
             types-xml.c
             types-yaml.c
             mmr-api.c

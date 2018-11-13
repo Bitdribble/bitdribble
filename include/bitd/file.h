@@ -62,6 +62,13 @@ char *bitd_envpath_add(char *path1, char *path2);
 /* Look up fname in path with given permissions mode */
 char *bitd_envpath_find(char *path, char *fname, bitd_uint32 mode);
 
+/* Read text file into *s. Return 0 on success. */
+int bitd_read_text_file(char **s, char *file_name);
+
+/* Perform a 'diff -w' operation between strings. Return 0 if they are
+   the same module white spaces. */
+int bitd_diff_w(char *s1, char *s2);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

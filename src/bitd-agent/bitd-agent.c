@@ -925,7 +925,7 @@ int main(int argc, char **argv) {
 		/* Determine the config based on suffix */
 		char *suffix = bitd_get_filename_suffix(g_config_file);
 		
-		if (!suffix || !strcmp(suffix, "xml")) {
+		if (suffix && !strcmp(suffix, "xml")) {
 		    g_config_xml = TRUE;
 		    g_config_yaml = FALSE;
 		} else {

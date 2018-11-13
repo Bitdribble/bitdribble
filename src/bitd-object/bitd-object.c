@@ -50,10 +50,12 @@ static char* g_prog_name = "";
 static char* g_input_file;
 static bitd_boolean g_input_xml = TRUE, g_input_yaml;
 static char* g_output_file = NULL;
-static bitd_boolean g_output_string, g_output_xml, g_output_yaml;
+static bitd_boolean g_output_json, g_output_string, g_output_xml, g_output_yaml;
+static char* g_output_json_expected = NULL;
 static char* g_output_string_expected = NULL;
 static char* g_output_xml_expected = NULL;
 static char* g_output_yaml_expected = NULL;
+static bitd_boolean g_compressed_output = FALSE;
 static bitd_boolean g_full_output = FALSE;
 static int g_chunk_size = CHUNK_SIZE_DEF;
 static bitd_boolean g_pack = FALSE;
@@ -77,27 +79,34 @@ static bitd_boolean g_sort = FALSE;
 void usage() {
 
     printf("\nUsage: %s [OPTIONS ... ]\n\n", g_prog_name);
-    printf("This program tests object => xml and yaml conversion.\n\n");
+    printf("This program tests conversion between objects in xml and yaml format.\n\n");
 
     printf("Options:\n"
+           "    -i|--input input_file.{xml|yml|yaml}\n"
+           "       Input file. Format is determined from file suffix.\n"
+	   "       Default format is yaml.\n"
            "    -ix|--input-xml input_file\n"
-           "       File containing the object in xml format. Can use stdin.\n"
+           "       Input file, in xml format. Can use stdin.\n"
            "    -iy|--input-yaml input_file\n"
-           "       File containing the object in yaml format. Can use stdin.\n"
+           "       Input file, in yaml format. Can use stdin.\n"
            "    -os|--output-string output_file\n"
-           "       Output file for the object in string format. Can use stdout.\n"
+           "       Output file, in string format. Can use stdout.\n"
            "    -ox|--output-xml output_file\n"
-           "       Output file for the object in xml format. Can use stdout.\n"
+           "       Output file, in xml format. Can use stdout.\n"
            "    -oy|--output-yaml output_file\n"
-           "       Output file for the object in yaml format. Can use stdout.\n"
+           "       Output file, in yaml format. Can use stdout.\n"
+           "    -oje|--output-json-expected output_file\n"
+           "       Expected output in json format.\n"
            "    -ose|--output-string-expected output_file\n"
            "       Expected output in string format.\n"
            "    -oxe|--output-xml-expected output_file\n"
            "       Expected output in xml format.\n"
            "    -oye|--output-yaml-expected output_file\n"
            "       Expected output in yaml format.\n"
-	   "    -f|--full-output\n"
+	   "    -fo|--full-output\n"
 	   "       Full output file (not skipping default attributes).\n"
+	   "    -co|--compressed-output\n"
+	   "       Compressed output file (no newlines). Supported for json output only.\n"
 	   "    -s|--chunk-size size\n"
 	   "       Parse in this chunk size. Default: %d.\n"
 	   "    -p|--pack\n"
@@ -262,8 +271,13 @@ int main(int argc, char **argv) {
 
     /* Parse command line parameters */
     while (argc) {
-        if (!strcmp(argv[0], "-ix") ||
-	    !strcmp(argv[0], "--input-xml")) {
+        if (!strcmp(argv[0], "-i") ||
+	    !strcmp(argv[0], "--input") ||
+	    !strcmp(argv[0], "-ix") ||
+	    !strcmp(argv[0], "--input-xml") ||
+	    !strcmp(argv[0], "-iy") ||
+	    !strcmp(argv[0], "--input-yaml")) {
+	    char *opt = argv[0];
 
             /* Skip to next parameter */
             argc--;
@@ -274,11 +288,29 @@ int main(int argc, char **argv) {
             }
 
 	    g_input_file = argv[0];
-	    g_input_xml = TRUE;
-	    g_input_yaml = FALSE;
-
-        } else if (!strcmp(argv[0], "-iy") ||
-		   !strcmp(argv[0], "--input-yaml")) {
+	    
+	    if (!strcmp(opt, "-ix") ||
+		!strcmp(opt, "--input-xml")) {
+		g_input_xml = TRUE;
+		g_input_yaml = FALSE;
+	    } else if (!strcmp(opt, "-iy") ||
+		       !strcmp(opt, "--input-yaml")) {
+		g_input_xml = FALSE;
+		g_input_yaml = TRUE;
+	    } else {
+		/* Determine the config based on suffix */
+		char *suffix = bitd_get_filename_suffix(g_input_file);
+		
+		if (suffix && !strcmp(suffix, "xml")) {
+		    g_input_xml = TRUE;
+		    g_input_yaml = FALSE;
+		} else {
+		    g_input_xml = FALSE;
+		    g_input_yaml = TRUE;
+		}
+	    }
+        } else if (!strcmp(argv[0], "-oj") ||
+		   !strcmp(argv[0], "--output-json")) {
 
             /* Skip to next parameter */
             argc--;
@@ -288,9 +320,12 @@ int main(int argc, char **argv) {
                 usage();
             }
 
-	    g_input_file = argv[0];
-	    g_input_xml = FALSE;
-	    g_input_yaml = TRUE;
+	    g_output_file = argv[0];
+
+	    g_output_json = TRUE;
+	    g_output_string = FALSE;
+	    g_output_xml = FALSE;
+	    g_output_yaml = FALSE;
 
         } else if (!strcmp(argv[0], "-os") ||
 		   !strcmp(argv[0], "--output-string")) {
@@ -305,6 +340,7 @@ int main(int argc, char **argv) {
 
 	    g_output_file = argv[0];
 
+	    g_output_json = FALSE;
 	    g_output_string = TRUE;
 	    g_output_xml = FALSE;
 	    g_output_yaml = FALSE;
@@ -322,6 +358,7 @@ int main(int argc, char **argv) {
 
 	    g_output_file = argv[0];
 
+	    g_output_json = FALSE;
 	    g_output_string = FALSE;
 	    g_output_xml = TRUE;
 	    g_output_yaml = FALSE;
@@ -339,9 +376,23 @@ int main(int argc, char **argv) {
 
 	    g_output_file = argv[0];
 
+	    g_output_json = FALSE;
 	    g_output_string = FALSE;
 	    g_output_xml = FALSE;
 	    g_output_yaml = TRUE;
+
+        } else if (!strcmp(argv[0], "-oje") ||
+		   !strcmp(argv[0], "--output-json-expected")) {
+
+            /* Skip to next parameter */
+            argc--;
+            argv++;
+            
+            if (argc < 1) {
+                usage();
+            }
+
+	    g_output_json_expected = argv[0];
 
         } else if (!strcmp(argv[0], "-ose") ||
 		   !strcmp(argv[0], "--output-string-expected")) {
@@ -382,10 +433,15 @@ int main(int argc, char **argv) {
 
 	    g_output_yaml_expected = argv[0];
 
-        } else if (!strcmp(argv[0], "-f")||
+        } else if (!strcmp(argv[0], "-fo")||
 		   !strcmp(argv[0], "--full-output")) {
 
 	    g_full_output = TRUE;
+
+        } else if (!strcmp(argv[0], "-co")||
+		   !strcmp(argv[0], "--compressed-output")) {
+
+	    g_compressed_output = TRUE;
 
         } else if (!strcmp(argv[0], "-s") ||
 		   !strcmp(argv[0], "--chunk-size")) {
@@ -534,6 +590,12 @@ int main(int argc, char **argv) {
 	    goto end;
 	}
 
+	if (g_output_json) {
+	    buf = bitd_object_to_json(&a, g_full_output, g_compressed_output);
+	    fprintf(f, "%s", buf);
+	    free(buf);
+	}
+	
 	if (g_output_string) {
 	    buf = bitd_object_to_string(&a);
 	    fprintf(f, "%s\n", buf);
