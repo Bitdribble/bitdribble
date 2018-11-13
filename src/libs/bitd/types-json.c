@@ -410,6 +410,9 @@ bitd_boolean bitd_json_to_nvp(bitd_nvp_t *nvp,
 			      char *json, int json_nbytes,
 			      char *err_buf,
 			      int err_len) {
+    json_t *jroot = NULL;
+    json_error_t jerror;
+
     /* Initialize OUT parameters */
     if (nvp) {
 	*nvp = NULL;
@@ -417,5 +420,21 @@ bitd_boolean bitd_json_to_nvp(bitd_nvp_t *nvp,
     if (err_buf) {
 	err_buf[0] = 0;
     }
-    return FALSE;
+
+    /* Parse the json */
+    jroot = json_loadb(json, json_nbytes, 0, &jerror);
+    if (!jroot) {
+	if (err_buf && err_len) {
+	    snprintf(err_buf, err_len - 1, 
+		     "Json parse error at line %d: %s\n", 
+		     jerror.line, jerror.text);
+	    err_buf[err_len] = 0;
+	}
+        return FALSE;
+    }
+
+    /* Release the json object */
+    json_decref(jroot);
+
+    return TRUE;
 }
