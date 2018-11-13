@@ -173,9 +173,17 @@ char *bitd_nvp_to_json(bitd_nvp_t nvp,
  *============================================================================
  *                        bitd_object_to_json_element
  *============================================================================
- * Description:     
+ * Description:     Convert object to an element of json. Nvps are converted
+ *     to actual json buffers, and all other types are converted to json
+ *     values that can be reused to format a json buffer.
  * Parameters:    
+ *     a - pointer to the object to be converted
+ *     indentation - how many spaces to indent the buffer, in case the object 
+ *         is of nvp type. For non-nvp-type objects, the output is not indented.
+ *     full_json - append _!!<type> to the label names to determine type
+ *     single_line_json - print the json buffer on a single line
  * Returns:  
+ *     Heap-allocated buffer containing the json buffer
  */
 char *bitd_object_to_json_element(bitd_object_t *a,
 				  int indentation, /* How much to indent */
