@@ -202,7 +202,8 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 	/* Get the value in string form */
 	value_str = bitd_value_to_string(&a->v, a->type);
 
-	if (a->type == bitd_type_string || 
+	if ((a->type == bitd_type_uint64 && a->v.value_uint64 > LONG_MAX) ||
+	    a->type == bitd_type_string || 
 	    a->type == bitd_type_blob) {
 	    snprintf_w_realloc(&buf, &size, &idx, "\"%s\"", value_str);
 	} else {
@@ -277,7 +278,9 @@ char *bitd_object_to_json_element(bitd_object_t *a,
 		    value_str = strdup("");
 		}
 
-		if (full_json || a1.type == bitd_type_blob) {
+		if (full_json || 
+		    (a1.type == bitd_type_uint64 && a1.v.value_uint64 > LONG_MAX) ||
+		    a1.type == bitd_type_blob) {
 		    snprintf_w_realloc(&buf, &size, &idx,
 				       "%s%s\"%s_!!%s\":%s", 
 				       prefix, 
