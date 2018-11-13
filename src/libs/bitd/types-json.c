@@ -114,9 +114,13 @@ char *escape_to_json(char *s) {
  *============================================================================
  *                        bitd_object_to_json
  *============================================================================
- * Description:     
+ * Description:     Convert object to json buffer
  * Parameters:    
+ *     a - pointer to the object to be converted
+ *     full_json - append _!!<type> to the label names to determine type
+ *     single_line_json - print the json buffer on a single line
  * Returns:  
+ *     Heap-allocated buffer containing the json buffer
  */
 char *bitd_object_to_json(bitd_object_t *a,
 			  bitd_boolean full_json,
@@ -146,9 +150,13 @@ char *bitd_object_to_json(bitd_object_t *a,
  *============================================================================
  *                        bitd_nvp_to_json
  *============================================================================
- * Description:     
+ * Description:     Convert nvp to json buffer
  * Parameters:    
+ *     nvp - the nvp to be converted
+ *     full_json - append _!!<type> to the label names to determine type
+ *     single_line_json - print the json buffer on a single line
  * Returns:  
+ *     Heap-allocated buffer containing the json buffer
  */
 char *bitd_nvp_to_json(bitd_nvp_t nvp,
 		       bitd_boolean full_json,
