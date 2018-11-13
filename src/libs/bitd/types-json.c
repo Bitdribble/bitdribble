@@ -470,9 +470,10 @@ void bitd_json_elem_to_nvp(bitd_nvp_t *nvp, char *jkey, json_t *jelem,
 			   bitd_boolean is_root) {
     bitd_value_t v;
     bitd_type_t type;
-    int jtype;
+    int jtype;    
     char *jkey1;
     json_t *jvalue1;
+    int jindex1;
 
     jtype = json_typeof(jelem);
 
@@ -514,6 +515,14 @@ void bitd_json_elem_to_nvp(bitd_nvp_t *nvp, char *jkey, json_t *jelem,
 	    }
 	    /* Fallthrough to add v.value_nvp to the nvp */
 	}
+	break;
+    case JSON_ARRAY:
+	v.value_nvp = bitd_nvp_alloc(4);
+	type = bitd_type_nvp;
+	json_array_foreach(jelem, jindex1, jvalue1) {
+	    bitd_json_elem_to_nvp(&v.value_nvp, NULL, jvalue1, FALSE);
+	}
+	/* Fallthrough to add v.value_nvp to the nvp */
 	break;
     default:
 	type = bitd_type_void;
