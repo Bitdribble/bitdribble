@@ -356,3 +356,66 @@ char *bitd_nvp_to_json(bitd_nvp_t nvp,
     return bitd_object_to_json(&a, full_json, single_line_json);
 }
 
+
+/*
+ *============================================================================
+ *                        bitd_json_to_object
+ *============================================================================
+ * Description:     Parse json buffer into object
+ * Parameters:    
+ *     a [OUT] - pointer to the resulting object
+ *     json - the json buffer
+ *     json_nbytes - size of the json buffer
+ *     err_buf [IN/OUT] - the parse error message, if any
+ *     err_len - the length of the passed-in err_buf
+ * Returns:  
+ *     TRUE on successful parse
+ */
+bitd_boolean bitd_json_to_object(bitd_object_t *a, 
+				 char *json, int json_nbytes,
+				 char *err_buf,
+				 int err_len) {
+    bitd_boolean ret;
+    bitd_nvp_t nvp = NULL;
+
+    ret = bitd_json_to_nvp(&nvp, json, json_nbytes, err_buf, err_len);
+    if (ret) {
+	if (a) {
+	    a->type = bitd_type_nvp;
+	    a->v.value_nvp = nvp;
+	    nvp = NULL;
+	}
+    }
+
+    bitd_nvp_free(nvp);
+    return ret;
+}
+
+
+/*
+ *============================================================================
+ *                        bitd_json_to_nvp
+ *============================================================================
+ * Description:     Parse json buffer into nvp
+ * Parameters:    
+ *     nvp [OUT] - pointer to the resulting nvp
+ *     json - the json buffer
+ *     json_nbytes - size of the json buffer
+ *     err_buf [IN/OUT] - the parse error message, if any
+ *     err_len - the length of the passed-in err_buf
+ * Returns:  
+ *     TRUE on successful parse
+ */
+bitd_boolean bitd_json_to_nvp(bitd_nvp_t *nvp, 
+			      char *json, int json_nbytes,
+			      char *err_buf,
+			      int err_len) {
+    /* Initialize OUT parameters */
+    if (nvp) {
+	*nvp = NULL;
+    }
+    if (err_buf) {
+	err_buf[0] = 0;
+    }
+    return FALSE;
+}
