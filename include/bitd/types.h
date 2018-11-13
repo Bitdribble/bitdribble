@@ -242,6 +242,19 @@ extern char *bitd_nvp_to_json(bitd_nvp_t nvp,
 			      bitd_boolean compressed,
 			      bitd_boolean full_xml);
 
+/* Convert json to object */
+bitd_boolean bitd_json_to_object(bitd_object_t *a, 
+				 char *json, int json_nbytes,
+				 char *err_buf,
+				 int err_len);
+
+/* Convert json to nvp */
+bitd_boolean bitd_json_to_nvp(bitd_nvp_t *nvp, 
+			      char *json, int json_nbytes,
+			      char *err_buf,
+			      int err_len);
+
+
 /*
  * Xml apis
  */
