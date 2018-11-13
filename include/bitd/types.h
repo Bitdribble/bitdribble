@@ -231,7 +231,7 @@ extern char *bitd_object_to_json(bitd_object_t *a,
 
 extern char *bitd_object_to_json_element(bitd_object_t *a,
 					 int indentation, /* How much to indent */
-					 bitd_boolean full_xml);
+					 bitd_boolean full_json);
 
 /*
  * Xml apis
@@ -249,8 +249,8 @@ extern char *bitd_object_to_xml_element(bitd_object_t *a,
 
 /* Convert nvp to xml */
 extern char *bitd_nvp_to_xml(bitd_nvp_t nvp,
-			   char *nvp_name, /* '_' if not set */
-			   bitd_boolean full_xml);
+			     char *nvp_name, /* '_' if not set */
+			     bitd_boolean full_xml);
 extern char *bitd_nvp_to_xml_elem(bitd_nvp_t nvp, 
 				  char *nvp_name, /* '_' if not set */
 				  int indentation,
