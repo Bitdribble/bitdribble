@@ -550,11 +550,11 @@ void bitd_json_elem_to_nvp(bitd_nvp_t *nvp, char *jkey, json_t *jelem,
 	}
 
 	if (type == bitd_type_uint64) {
-	    v.value_uint64 = (bitd_uint64)json_integer_value(jelem);
+	    v.value_uint64 = (bitd_uint64)json_real_value(jelem);
 	} else if (type == bitd_type_int64) {
-	    v.value_int64 = json_integer_value(jelem);
+	    v.value_int64 = json_real_value(jelem);
 	} else {
-	    v.value_double = json_integer_value(jelem);
+	    v.value_double = json_real_value(jelem);
 	}
 	break;
     case JSON_STRING:
