@@ -1,6 +1,6 @@
 tags:
-  - tag1: value1
-  - tag2: value2
+  tag1: value1
+  tag1-empty:
 modules:
   module-name: bitd-echo
 task-inst:
@@ -12,7 +12,7 @@ task-inst:
     name-int64: -128
     name-int64: 127
   tags:
-    tag2:
-    tag3: value3
+    tag2: value2
+    tag2-empty:
   input:
     name-boolean: FALSE

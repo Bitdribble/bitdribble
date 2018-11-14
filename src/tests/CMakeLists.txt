@@ -122,5 +122,6 @@ ttv_add_test(test-tcp-ts bin/test-tcp-ts -n 1 -enq -ack -v 0)
 ttv_add_test(test-log bin/test-log -reg foo -msg trace foo test -unreg foo -s 1)
 
 # Task instance tests
-ttv_add_test(test-bitd-agent-echo bin/bitd-agent -c ${TEST_CONFIG}/echo/echo.yml -mrc 1)
+ttv_add_test(test-bitd-agent-echo-yml bin/bitd-agent -c ${TEST_CONFIG}/echo/echo.yml -mrc 1)
+ttv_add_test(test-bitd-agent-echo-xml bin/bitd-agent -c ${TEST_CONFIG}/echo/echo.xml -mrc 1)
 ttv_add_test(test-bitd-agent-exec bin/bitd-agent -c ${TEST_CONFIG}/exec/exec.yml -mrc 6)
