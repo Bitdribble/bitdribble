@@ -89,6 +89,7 @@ static mmr_vlog_func_t mvlog;
 
 /* The config and the result file */
 static char* g_config_file = NULL;
+static bitd_boolean g_config_json = FALSE;
 static bitd_boolean g_config_xml = FALSE;
 static bitd_boolean g_config_yaml = FALSE;
 
@@ -123,9 +124,11 @@ void usage() {
     printf("This program tests the module manager.\n\n");
 
     printf("Options:\n"
-	   "  -c config_file.{xml|yml|yaml}\n"
+	   "  -c config_file.{json|xml|yml|yaml}\n"
 	   "    The module-agent configuration file. Format is determined from\n"
 	   "    file suffix. Default format is yaml.\n"
+	   "  -cj config_file.json\n"
+	   "    The module-agent configuration file, in json format.\n"
 	   "  -cx config_file.xml\n"
 	   "    The module-agent configuration file, in xml format.\n"
 	   "  -cy config_file.yaml\n"
@@ -201,11 +204,67 @@ int mlog(ttlog_level level, char *format_string, ...) {
 
 /*
  *============================================================================
+ *                        parse_config_json
+ *============================================================================
+ * Description:     
+ * Parameters:    
+ * Returns:  The configuration nvp
+ */
+bitd_nvp_t parse_config_json(FILE *f) {
+    char *buf;
+    int idx, size = 10240;
+    char *err_buf = NULL;
+    int err_size = 1024;
+    bitd_nvp_t nvp = NULL;
+
+    err_buf = malloc(err_size);
+
+    /* Read the input */
+    buf = malloc(size);
+    idx = 0;
+    
+    /* Read the whole yaml file */
+    do {
+	if (idx + 1 >= size) {
+	    size *= 2;
+	    buf = realloc(buf, size);
+	}
+
+	idx += fread(buf + idx, 1, size - idx - 1, f);
+	if (ferror(f)) {
+	    fprintf(stderr, "%s: %s: Read error, errno %d (%s).\n",
+		    g_prog_name, g_config_file, errno, 
+		    strerror(bitd_socket_errno));
+	    goto end;
+	}
+	
+	/* Null terminate */
+	buf[idx] = 0;
+    } while (!feof(f));
+
+    /* Parse the buffer */
+    if (!bitd_json_to_nvp(&nvp, buf, idx, err_buf, err_size)) {
+	fprintf(stderr, "%s: %s: %s.\n",
+		g_prog_name, g_config_file, err_buf);
+	goto end;
+    }
+
+ end:
+    if (buf) {
+	free(buf);
+    }
+    free(err_buf);
+    return nvp;
+} 
+
+
+/*
+ *============================================================================
  *                        parse_config_xml
  *============================================================================
  * Description:     
  * Parameters:    
- * Returns:  
+ * Returns:  The configuration nvp
  */
 bitd_nvp_t parse_config_xml(FILE *f) {
     int chunk_size = 1024;
@@ -215,10 +274,6 @@ bitd_nvp_t parse_config_xml(FILE *f) {
     bitd_object_t a;
     char *object_name = NULL;
     bitd_boolean done;
-
-    /* Open the input file */
-    ttlog(log_level_trace, g_log_keyid, "Loading config from %s", 
-	  g_config_file);
 
     /* Initialize the nx stream */
     s = bitd_xml_stream_init();
@@ -915,10 +970,16 @@ int main(int argc, char **argv) {
 
 	    g_config_file = argv[0];
 	    
-	    if (!strcmp(opt, "-cx")) {
+	    if (!strcmp(opt, "-cj")) {
+		g_config_json = TRUE;
+		g_config_xml = FALSE;
+		g_config_yaml = FALSE;
+	    } if (!strcmp(opt, "-cx")) {
+		g_config_json = FALSE;
 		g_config_xml = TRUE;
 		g_config_yaml = FALSE;
 	    } else if (!strcmp(opt, "-cy")) {
+		g_config_json = FALSE;
 		g_config_xml = FALSE;
 		g_config_yaml = TRUE;
 	    } else {
@@ -926,9 +987,15 @@ int main(int argc, char **argv) {
 		char *suffix = bitd_get_filename_suffix(g_config_file);
 		
 		if (suffix && !strcmp(suffix, "xml")) {
+		    g_config_json = FALSE;
 		    g_config_xml = TRUE;
 		    g_config_yaml = FALSE;
+		} else if (suffix && !strcmp(suffix, "json")) {
+		    g_config_json = TRUE;
+		    g_config_xml = FALSE;
+		    g_config_yaml = FALSE;
 		} else {
+		    g_config_json = FALSE;
 		    g_config_xml = FALSE;
 		    g_config_yaml = TRUE;
 		}
@@ -1142,6 +1209,9 @@ int main(int argc, char **argv) {
     if (!strcmp(g_config_file, "stdin")) {
 	f = stdin;
     } else {
+	ttlog(log_level_trace, g_log_keyid, "Loading config from %s", 
+	      g_config_file);
+
 	f = fopen(g_config_file, "r");
     }
     if (!f) {
@@ -1155,7 +1225,9 @@ int main(int argc, char **argv) {
     old_config_nvp = config_nvp;
 	
     /* Parse the configuration */
-    if (g_config_xml) {
+    if (g_config_json) {
+	config_nvp = parse_config_json(f);
+    } else if (g_config_xml) {
 	config_nvp = parse_config_xml(f);
     } else if (g_config_yaml) {
 	config_nvp = parse_config_yaml(f);
