@@ -207,6 +207,7 @@ typedef enum {
     bitd_buffer_type_auto = 0,
     bitd_buffer_type_string,
     bitd_buffer_type_blob,
+    bitd_buffer_type_json,
     bitd_buffer_type_xml,
     bitd_buffer_type_yaml
 } bitd_buffer_type_t;

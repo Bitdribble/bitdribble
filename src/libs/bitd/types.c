@@ -2079,6 +2079,11 @@ void bitd_buffer_to_object(bitd_object_t *a,
 
     if (buffer_type == bitd_buffer_type_auto) {
 	/* Detect the buffer type */
+	ret = bitd_json_to_object(a, buf, buf_nbytes, NULL, 0);
+	if (ret) {
+	    /* Detected json - object is already converted */
+	    return;
+	}
 	ret = bitd_xml_to_object(a, object_name, buf, buf_nbytes, NULL, 0);
 	if (ret) {
 	    /* Detected xml - object is already converted */
@@ -2118,6 +2123,9 @@ void bitd_buffer_to_object(bitd_object_t *a,
 	a->v.value_blob = malloc(sizeof(bitd_blob) + buf_nbytes);
 	bitd_blob_size(a->v.value_blob) = buf_nbytes;
 	memcpy(bitd_blob_payload(a->v.value_blob), buf, buf_nbytes);
+	break;
+    case bitd_buffer_type_json:
+	bitd_json_to_object(a, buf, buf_nbytes, NULL, 0);
 	break;
     case bitd_buffer_type_xml:
 	bitd_xml_to_object(a, object_name, buf, buf_nbytes, NULL, 0);
