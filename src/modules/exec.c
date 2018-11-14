@@ -346,6 +346,8 @@ bitd_task_inst_t task_inst_create(char *task_name,
 	    p->input_buffer_type = bitd_buffer_type_string;
 	} else if (!strcmp(args->e[idx].v.value_string, "blob")) {
 	    p->input_buffer_type = bitd_buffer_type_blob;
+	} else if (!strcmp(args->e[idx].v.value_string, "json")) {
+	    p->input_buffer_type = bitd_buffer_type_json;
 	} else if (!strcmp(args->e[idx].v.value_string, "xml")) {
 	    p->input_buffer_type = bitd_buffer_type_xml;
 	} else if (!strcmp(args->e[idx].v.value_string, "yaml")) {
@@ -362,6 +364,8 @@ bitd_task_inst_t task_inst_create(char *task_name,
 	    p->output_buffer_type = bitd_buffer_type_string;
 	} else if (!strcmp(args->e[idx].v.value_string, "blob")) {
 	    p->output_buffer_type = bitd_buffer_type_blob;
+	} else if (!strcmp(args->e[idx].v.value_string, "json")) {
+	    p->output_buffer_type = bitd_buffer_type_json;
 	} else if (!strcmp(args->e[idx].v.value_string, "xml")) {
 	    p->output_buffer_type = bitd_buffer_type_xml;
 	} else if (!strcmp(args->e[idx].v.value_string, "yaml")) {
@@ -378,6 +382,8 @@ bitd_task_inst_t task_inst_create(char *task_name,
 	    p->error_buffer_type = bitd_buffer_type_string;
 	} else if (!strcmp(args->e[idx].v.value_string, "blob")) {
 	    p->error_buffer_type = bitd_buffer_type_blob;
+	} else if (!strcmp(args->e[idx].v.value_string, "json")) {
+	    p->error_buffer_type = bitd_buffer_type_json;
 	} else if (!strcmp(args->e[idx].v.value_string, "xml")) {
 	    p->error_buffer_type = bitd_buffer_type_xml;
 	} else if (!strcmp(args->e[idx].v.value_string, "yaml")) {
