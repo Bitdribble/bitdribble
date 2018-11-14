@@ -2079,7 +2079,7 @@ void bitd_buffer_to_object(bitd_object_t *a,
 
     if (buffer_type == bitd_buffer_type_auto) {
 	/* Detect the buffer type */
-	ret = bitd_xml_to_object(a, object_name, buf, buf_nbytes);
+	ret = bitd_xml_to_object(a, object_name, buf, buf_nbytes, NULL, 0);
 	if (ret) {
 	    /* Detected xml - object is already converted */
 	    return;
@@ -2120,7 +2120,7 @@ void bitd_buffer_to_object(bitd_object_t *a,
 	memcpy(bitd_blob_payload(a->v.value_blob), buf, buf_nbytes);
 	break;
     case bitd_buffer_type_xml:
-	bitd_xml_to_object(a, object_name, buf, buf_nbytes);
+	bitd_xml_to_object(a, object_name, buf, buf_nbytes, NULL, 0);
 	break;
     case bitd_buffer_type_yaml:
 	bitd_yaml_to_object(a, buf, buf_nbytes, NULL, NULL, 0);

@@ -267,82 +267,50 @@ bitd_nvp_t parse_config_json(FILE *f) {
  * Returns:  The configuration nvp
  */
 bitd_nvp_t parse_config_xml(FILE *f) {
-    int chunk_size = 1024;
     char *buf;
-    int idx;
-    bitd_xml_stream s = NULL;
-    bitd_object_t a;
-    char *object_name = NULL;
-    bitd_boolean done;
+    int idx, size = 10240;
+    char *err_buf = NULL;
+    int err_size = 1024;
+    bitd_nvp_t nvp = NULL;
 
-    /* Initialize the nx stream */
-    s = bitd_xml_stream_init();
+    err_buf = malloc(err_size);
 
     /* Read the input */
-    buf = malloc(chunk_size+1);
+    buf = malloc(size);
     idx = 0;
+    
+    /* Read the whole yaml file */
+    do {
+	if (idx + 1 >= size) {
+	    size *= 2;
+	    buf = realloc(buf, size);
+	}
 
-    done = FALSE;
-    while (!done) {
-	idx = fread(buf, 1, chunk_size, f);
+	idx += fread(buf + idx, 1, size - idx - 1, f);
 	if (ferror(f)) {
 	    fprintf(stderr, "%s: %s: Read error, errno %d (%s).\n",
-		    g_prog_name, g_config_file, 
-		    bitd_socket_errno, strerror(bitd_socket_errno));
-	    fclose(f);
-	    free(buf);
-	    bitd_xml_stream_free(s);
-	    exit(-1);
+		    g_prog_name, g_config_file, errno, 
+		    strerror(bitd_socket_errno));
+	    goto end;
 	}
-
+	
+	/* Null terminate */
 	buf[idx] = 0;
-	done = feof(f);
+    } while (!feof(f));
 
-	/* Parse the buffer */
-	if (!bitd_xml_stream_read(s, buf, idx, done)) {
-	    fprintf(stderr, "%s: %s: %s.\n",
-		    g_prog_name, g_config_file, bitd_xml_stream_get_error(s));
-	    free(buf);
-	    bitd_xml_stream_free(s);
-	    return NULL;	    
-	}
+    /* Parse the buffer */
+    if (!bitd_xml_to_nvp(&nvp, buf, idx, err_buf, err_size)) {
+	fprintf(stderr, "%s: %s: %s.\n",
+		g_prog_name, g_config_file, err_buf);
+	goto end;
     }
 
-    free(buf);
-
-    /* Get the nvp */
-    bitd_object_init(&a);
-
-    /* Get the object */
-    bitd_xml_stream_get_object(s, &a, &object_name);
-
-    /* Can close the nx stream now */
-    bitd_xml_stream_free(s);
-
-    if (!object_name || strcmp(object_name, "module-config")) {
-	fprintf(stderr, 
-		"%s: %s: Invalid xml root name '%s', should be 'module-config'.\n",
-		g_prog_name, g_config_file, object_name ? object_name: "");
-	bitd_object_free(&a);
-	if (object_name) {
-	    free(object_name);
-	}
-	return NULL;
+ end:
+    if (buf) {
+	free(buf);
     }
-
-    if (object_name) {
-	free(object_name);
-    }
-
-    if (a.type != bitd_type_nvp) {
-	fprintf(stderr, 
-		"%s: %s: Invalid xml config, should be nvp format.\n",
-		g_prog_name, g_config_file);
-	bitd_object_free(&a);
-	return NULL;
-    }
-
-    return a.v.value_nvp;
+    free(err_buf);
+    return nvp;
 } 
 
 
