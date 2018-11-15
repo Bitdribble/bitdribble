@@ -186,6 +186,7 @@ void task_inst_destroy(bitd_task_inst_t p) {
  */
 int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
     bitd_nvp_t input_nvp, merged_nvp;
+    mmr_task_inst_results_t results;
     char *buf;
 
     ttlog(log_level_trace, s_log_keyid,
@@ -208,7 +209,9 @@ int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
     merged_nvp = bitd_nvp_merge(input_nvp, p->args, NULL);
     if (bitd_nvp_compare(merged_nvp, input_nvp)) {
 	/* Args are not subset of input. */
-	exit(-1);
+	memset(&results, 0, sizeof(results));
+	results.exit_code = -1;
+	mmr_task_inst_report_results(p->mmr_task_inst_hdl, &results);
     }
     bitd_nvp_free(merged_nvp);
 
