@@ -71,6 +71,7 @@ struct log_cb_s {
 
 typedef enum {
     ttlog_opcode_log_msg,
+    ttlog_opcode_flush,
     ttlog_opcode_exit,
     
     ttlog_opcode_max             /* Sentinel */
@@ -269,6 +270,7 @@ static void handle_log_msg(ttlog_msg_buffer *log_msg_buf) {
  * Returns:  
  */
 static void logger_event_loop(void *thread_arg) {
+    bitd_queue q;
     bitd_msg m;
     
     while (!g_log_cb->force_stop_p) {
@@ -281,6 +283,11 @@ static void logger_event_loop(void *thread_arg) {
 	    /* A log message */
 	    handle_log_msg((ttlog_msg_buffer *)m);
 	    break;
+	case ttlog_opcode_flush:
+	    /* Send the flush complete message */
+	    q = *(bitd_queue *)m;
+	    bitd_msg_send(m, q);
+	    continue;
 	case ttlog_opcode_exit:
 	    /* We're exiting */
 	    g_log_cb->force_stop_p = TRUE;
@@ -649,6 +656,36 @@ bitd_boolean ttlog_set_level(char *key_name, ttlog_level level) {
 
     return TRUE;
 }
+
+
+/*
+ *============================================================================
+ *                        ttlog_flush
+ *============================================================================
+ * Description:     Wait for all pending log messages to be written to the log
+ * Parameters:    
+ * Returns:  
+ */
+void ttlog_flush(void) {
+    bitd_queue q;
+    bitd_msg m;
+
+    q = bitd_queue_create("logger-flush", 0, 0);
+    m = bitd_msg_alloc(ttlog_opcode_flush, sizeof(bitd_queue));
+
+    /* Copy the queue id inside the message */
+    *(bitd_queue *)m = q;
+
+    /* Send the flush message */
+    bitd_msg_send(m, g_log_cb->q);
+
+    /* Wait for the flush complete message */
+    m = bitd_msg_receive(q);
+
+    /* Release allocated memory */
+    bitd_msg_free(m);
+    bitd_queue_destroy(q);
+} 
 
 
 /*
