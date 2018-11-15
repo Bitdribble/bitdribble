@@ -621,7 +621,7 @@ static void xml_end(void *data, const XML_Char *el) {
 	if (u->object.type != bitd_type_nvp) {
 	    /* Convert string value */
 	    if (!bitd_typed_string_to_object(&u->object, u->value_str, 
-					   u->object.type)) {
+					     u->object.type)) {
 		u->s->error_str = xml_error("Invalid element '%s' value '%s'",
 					    u->name, 
 					    u->value_str ? u->value_str : "NULL");
@@ -719,8 +719,11 @@ static void xml_char_data_handler(void *data,
  * Parameters:    
  * Returns:  
  */
-bitd_boolean bitd_xml_to_object(bitd_object_t *a, char **object_name,
-				char *xml, int xml_nbytes) {
+bitd_boolean bitd_xml_to_object(bitd_object_t *a, 
+				char **object_name,
+				char *xml, int xml_nbytes,
+				char *err_buf,
+				int err_len) {
     bitd_boolean ret;
     bitd_xml_stream s;
 
@@ -733,6 +736,10 @@ bitd_boolean bitd_xml_to_object(bitd_object_t *a, char **object_name,
     bitd_object_init(a);
     if (object_name) {
 	*object_name = NULL;
+    }
+
+    if (err_buf && err_len) {
+	err_buf[0] = 0;
     }
 
     /* Empty xml converts to void object */
@@ -748,6 +755,12 @@ bitd_boolean bitd_xml_to_object(bitd_object_t *a, char **object_name,
     if (ret) {
 	/* Get the nvp */
 	bitd_xml_stream_get_object(s, a, object_name);
+    } else {
+	/* Parse error */
+	if (err_buf && err_len && s->error_str) {
+	    snprintf(err_buf, err_len - 1, "%s", s->error_str);
+	    err_buf[err_len - 1] = 0;
+	}
     }
 
     /* Deinitialize the nx stream */
@@ -765,7 +778,10 @@ bitd_boolean bitd_xml_to_object(bitd_object_t *a, char **object_name,
  * Parameters:    
  * Returns:  
  */
-bitd_boolean bitd_xml_to_nvp(bitd_nvp_t *nvp, char *xml, int xml_nbytes) {
+bitd_boolean bitd_xml_to_nvp(bitd_nvp_t *nvp, 
+			     char *xml, int xml_nbytes,
+			     char *err_buf,
+			     int err_len) {
     int ret;
     bitd_object_t a;
 
@@ -773,14 +789,14 @@ bitd_boolean bitd_xml_to_nvp(bitd_nvp_t *nvp, char *xml, int xml_nbytes) {
     if (!nvp) {
 	return FALSE;
     }
-    
+
     /* Initialize OUT parameter */
     *nvp = NULL;
 
     bitd_object_init(&a);
 
     /* Convert the xml to an object */
-    ret = bitd_xml_to_object(&a, NULL, xml, xml_nbytes);
+    ret = bitd_xml_to_object(&a, NULL, xml, xml_nbytes, err_buf, err_len);
     if (ret) {
 	if (a.type != bitd_type_nvp) {
 	    ret = FALSE;

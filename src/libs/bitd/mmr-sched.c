@@ -303,6 +303,21 @@ bitd_boolean mmr_schedule_triggers(mmr_task_inst_t ti_trigger,
 
     bitd_mutex_lock(g_mmr_cb->lock);
 
+    /* Should we exit on non-zero exit code? */
+    if (r->exit_code &&
+	bitd_nvp_lookup_elem(ti_trigger->sched, "exit-on-error", &idx) &&
+	ti_trigger->sched->e[idx].type == bitd_type_boolean &&
+	ti_trigger->sched->e[idx].v.value_boolean) {
+
+	mmr_log(log_level_err, "%s: %s: Non-zero exit code %d", 
+		ti_trigger->task->name, ti_trigger->name, r->exit_code);
+
+	/* Exit the application after leaving a bit of time for log messages
+	   to flush */
+	bitd_sleep(250);
+	exit(r->exit_code);	
+    }
+
     /* TO DO: optimize with a hash mechanism */
     for (ti = g_mmr_cb->triggered_head;
 	 ti != TRIGGERED_HEAD(g_mmr_cb);

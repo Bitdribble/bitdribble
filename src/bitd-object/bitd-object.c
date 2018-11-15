@@ -55,8 +55,8 @@ static char* g_output_json_expected = NULL;
 static char* g_output_string_expected = NULL;
 static char* g_output_xml_expected = NULL;
 static char* g_output_yaml_expected = NULL;
-static bitd_boolean g_single_line_output = FALSE;
-static bitd_boolean g_full_output = FALSE;
+static bitd_boolean g_output_single_line = FALSE;
+static bitd_boolean g_output_full = FALSE;
 static int g_chunk_size = CHUNK_SIZE_DEF;
 static bitd_boolean g_pack = FALSE;
 static bitd_boolean g_chunk = FALSE;
@@ -103,9 +103,9 @@ void usage() {
            "       Expected output in xml format.\n"
            "    -oye|--output-yaml-expected output_file\n"
            "       Expected output in yaml format.\n"
-	   "    -fo|--full-output\n"
+	   "    -of|--output-full\n"
 	   "       Full output file (not skipping default attributes).\n"
-	   "    -slo|--single-line-output\n"
+	   "    -osl|--output-single-line\n"
 	   "       Print the output on a single line (for json output only).\n"
 	   "    -s|--chunk-size size\n"
 	   "       Parse in this chunk size. Default: %d.\n"
@@ -503,15 +503,15 @@ int main(int argc, char **argv) {
 
 	    g_output_yaml_expected = argv[0];
 
-        } else if (!strcmp(argv[0], "-fo")||
-		   !strcmp(argv[0], "--full-output")) {
+        } else if (!strcmp(argv[0], "-of")||
+		   !strcmp(argv[0], "--output-full")) {
 
-	    g_full_output = TRUE;
+	    g_output_full = TRUE;
 
-        } else if (!strcmp(argv[0], "-slo")||
-		   !strcmp(argv[0], "--single-line-output")) {
+        } else if (!strcmp(argv[0], "-osl")||
+		   !strcmp(argv[0], "--output-single-line")) {
 
-	    g_single_line_output = TRUE;
+	    g_output_single_line = TRUE;
 
         } else if (!strcmp(argv[0], "-s") ||
 		   !strcmp(argv[0], "--chunk-size")) {
@@ -663,7 +663,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (g_output_json) {
-	    buf = bitd_object_to_json(&a, g_full_output, g_single_line_output);
+	    buf = bitd_object_to_json(&a, g_output_full, g_output_single_line);
 	    fprintf(f, "%s", buf);
 	    free(buf);
 	}
@@ -675,13 +675,13 @@ int main(int argc, char **argv) {
 	}
 	
 	if (g_output_xml) {
-	    buf = bitd_object_to_xml(&a, object_name, g_full_output);
+	    buf = bitd_object_to_xml(&a, object_name, g_output_full);
 	    fprintf(f, "%s", buf);
 	    free(buf);
 	}
 
 	if (g_output_yaml) {
-	    buf = bitd_object_to_yaml(&a, g_full_output, is_stream);
+	    buf = bitd_object_to_yaml(&a, g_output_full, is_stream);
 	    if (buf) {
 		fprintf(f, "%s", buf);
 		free(buf);
@@ -715,7 +715,7 @@ int main(int argc, char **argv) {
     }
 
     if (g_output_xml_expected) {
-	buf = bitd_object_to_xml(&a, object_name, g_full_output);
+	buf = bitd_object_to_xml(&a, object_name, g_output_full);
 
 	ret = bitd_read_text_file(&buf1, g_output_xml_expected);
 	if (!ret) {
@@ -735,7 +735,7 @@ int main(int argc, char **argv) {
     }
 
     if (g_output_yaml_expected) {
-	buf = bitd_object_to_yaml(&a, g_full_output, is_stream);
+	buf = bitd_object_to_yaml(&a, g_output_full, is_stream);
 	ret = bitd_read_text_file(&buf1, g_output_yaml_expected);
 	if (!ret) {
 	    ret = bitd_diff_w(buf, buf1);

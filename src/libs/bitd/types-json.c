@@ -470,12 +470,46 @@ void bitd_json_elem_to_nvp(bitd_nvp_t *nvp, char *jkey, json_t *jelem,
 			   bitd_boolean is_root) {
     bitd_value_t v;
     bitd_type_t type;
+    bitd_type_t key_type;
+    bitd_boolean key_type_set = FALSE;
     int jtype;    
     char *jkey1;
     json_t *jvalue1;
     int jindex1;
+    char *c, *c1;
 
     jtype = json_typeof(jelem);
+
+    if (jkey) {
+	/* Copy the key to the heap, so we can trim it of its type, if it has 
+	   a type suffix */
+	jkey = strdup(jkey);
+    }
+
+    /* Infer the type based on the label name */
+    if (jkey) {
+	c = jkey;
+	c1 = NULL;
+	do {
+	    if (c1) {
+		c = c1;
+	    } else {
+		c = strstr(c, "_!!");
+	    }
+	    if (c) {
+		c1 = strstr(c+1, "_!!");
+	    }
+	} while (c1);
+
+	if (c) {
+	    /* The last occurrence of "_!!" in the jkey */
+	    key_type = bitd_get_type_t(c + 3);
+	    if (key_type != bitd_type_max) {
+		*c = 0;
+		key_type_set = TRUE;
+	    }
+	}
+    }
 
     switch (jtype) {
     case JSON_NULL:
@@ -490,16 +524,56 @@ void bitd_json_elem_to_nvp(bitd_nvp_t *nvp, char *jkey, json_t *jelem,
 	type = bitd_type_boolean;
 	break;
     case JSON_INTEGER:
-	v.value_int64 = json_integer_value(jelem);
 	type = bitd_type_int64;
+	if (key_type_set) {
+	    if (key_type == bitd_type_uint64 ||
+		key_type == bitd_type_double) {
+		type = key_type;
+	    }
+	}
+
+	if (type == bitd_type_uint64) {
+	    v.value_uint64 = (bitd_uint64)json_integer_value(jelem);
+	} else if (type == bitd_type_int64) {
+	    v.value_int64 = json_integer_value(jelem);
+	} else {
+	    v.value_double = json_integer_value(jelem);
+	}
 	break;
     case JSON_REAL:
-	v.value_double = json_real_value(jelem);
 	type = bitd_type_double;
+	if (key_type_set) {
+	    if (key_type == bitd_type_uint64 ||
+		key_type == bitd_type_int64) {
+		type = key_type;
+	    }
+	}
+
+	if (type == bitd_type_uint64) {
+	    v.value_uint64 = (bitd_uint64)json_real_value(jelem);
+	} else if (type == bitd_type_int64) {
+	    v.value_int64 = json_real_value(jelem);
+	} else {
+	    v.value_double = json_real_value(jelem);
+	}
 	break;
     case JSON_STRING:
-	v.value_string = (char *)json_string_value(jelem);
 	type = bitd_type_string;
+	if (key_type_set) {
+	    if (key_type == bitd_type_void ||
+		key_type == bitd_type_boolean ||
+		key_type == bitd_type_uint64 ||
+		key_type == bitd_type_int64 ||
+		key_type == bitd_type_double ||
+		key_type == bitd_type_blob) {
+		type = key_type;
+	    }
+	}
+
+	c = (char *)json_string_value(jelem);
+	
+	memset(&v, 0, sizeof(v));
+	bitd_typed_string_to_value(&v, c, type);
 	break;
     case JSON_OBJECT:
 	if (is_root) {
@@ -534,7 +608,9 @@ void bitd_json_elem_to_nvp(bitd_nvp_t *nvp, char *jkey, json_t *jelem,
 		      &v, 
 		      type);
     
-    if (type == bitd_type_nvp) {
-	bitd_nvp_free(v.value_nvp);
+    bitd_value_free(&v, type);
+
+    if (jkey) {
+	free(jkey);
     }
 }

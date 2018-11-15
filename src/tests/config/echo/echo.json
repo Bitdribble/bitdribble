@@ -1,0 +1,27 @@
+{
+  "tags": {
+    "tag1": "value1",
+    "tag1-empty": null
+  },
+  "modules": {
+    "module-name": "bitd-echo"
+  },
+  "task-inst": {
+    "task-name": "echo",
+    "task-inst-name": "Echo task instance",
+    "schedule": {
+      "type": "once"
+    },
+    "args": {
+      "name-int64": -128,
+      "name-int64": 127
+    },
+    "tags": {
+      "tag2": "value2",
+      "tag2-empty": null
+    },
+    "input": {
+      "name-boolean": false
+    }
+  }
+}

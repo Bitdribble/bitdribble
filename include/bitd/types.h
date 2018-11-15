@@ -207,6 +207,7 @@ typedef enum {
     bitd_buffer_type_auto = 0,
     bitd_buffer_type_string,
     bitd_buffer_type_blob,
+    bitd_buffer_type_json,
     bitd_buffer_type_xml,
     bitd_buffer_type_yaml
 } bitd_buffer_type_t;
@@ -279,11 +280,17 @@ extern char *bitd_nvp_to_xml_elem(bitd_nvp_t nvp,
 				  bitd_boolean full_xml);
 
 /* Convert xml to object */
-bitd_boolean bitd_xml_to_object(bitd_object_t *a, char **object_name,
-				char *xml, int xml_nbytes);
+bitd_boolean bitd_xml_to_object(bitd_object_t *a, 
+				char **object_name,
+				char *xml, int xml_nbytes,
+				char *err_buf,
+				int err_len);
 
 /* Convert xml to nvp, if the xml converts to an nvp type object */
-bitd_boolean bitd_xml_to_nvp(bitd_nvp_t *nvp, char *xml, int xml_nbytes);
+bitd_boolean bitd_xml_to_nvp(bitd_nvp_t *nvp, 
+			     char *xml, int xml_nbytes,
+			     char *err_buf,
+			     int err_len);
 
 /* The xml stream handle */
 typedef struct bitd_xml_stream_s *bitd_xml_stream;
