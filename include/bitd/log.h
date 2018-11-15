@@ -78,6 +78,9 @@ ttlog_keyid ttlog_register(char *key_name);
 void ttlog_unregister(ttlog_keyid keyid);
 ttlog_keyid ttlog_get_keyid(char *key_name);
 
+/* Wait for all pending log messages to be written to the log */
+void ttlog_flush(void);
+
 /* Log a message */
 int ttlog(ttlog_level level, ttlog_keyid keyid, char *format_string, ...);
 int ttvlog(ttlog_level level, ttlog_keyid keyid, char *format_string, va_list args);

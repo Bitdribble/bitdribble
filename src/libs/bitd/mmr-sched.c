@@ -312,9 +312,10 @@ bitd_boolean mmr_schedule_triggers(mmr_task_inst_t ti_trigger,
 	mmr_log(log_level_err, "%s: %s: Non-zero exit code %d", 
 		ti_trigger->task->name, ti_trigger->name, r->exit_code);
 
-	/* Exit the application after leaving a bit of time for log messages
-	   to flush */
-	bitd_sleep(250);
+	/* Wait for existing log messages to be saved */
+	ttlog_flush();
+
+	/* Exit the application */
 	exit(r->exit_code);	
     }
 
