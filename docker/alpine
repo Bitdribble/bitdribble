@@ -3,13 +3,16 @@ FROM alpine:3.7
 # Our makefiles expect OSTYPE to be defined as below
 ENV OSTYPE=linux-alpine
 
-RUN apk add --no-cache alpine-sdk cmake openssh linux-headers expat-dev jansson-dev yaml-dev openssl curl-dev libmicrohttpd-dev \
+RUN apk add --no-cache alpine-sdk cmake openssh linux-headers expat-dev jansson-dev yaml-dev openssl-dev curl-dev libmicrohttpd-dev \
     && cd / \
     && git clone https://github.com/bitdribble/bitdribble.git \
     && mkdir bitdribble/build && cd bitdribble/build \
     && cmake .. \
     && make -j 4 \
-    && make install    
+    && make test \
+    && make install \
+    && apk del alpine-sdk cmake openssh linux-headers \
+    && rm -rf /bitdribble
 
 ENTRYPOINT ["sh"]
 CMD []
