@@ -1,0 +1,13 @@
+FROM alpine
+
+RUN apk add alpine-sdk cmake gdb bash linux-headers emacs expat-dev yaml-dev openssl curl-dev
+
+# Set up PATH and LD_LIBRARY_PATH to include the exports area
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/build/bin
+ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib:/build/lib
+
+# Our makefiles expect OSTYPE to be defined as below
+ENV OSTYPE=linux-alpine
+
+ENTRYPOINT ["sh"]
+CMD []
