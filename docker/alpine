@@ -1,13 +1,15 @@
-FROM alpine
-
-RUN apk add alpine-sdk cmake gdb bash linux-headers emacs expat-dev yaml-dev openssl curl-dev
-
-# Set up PATH and LD_LIBRARY_PATH to include the exports area
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/build/bin
-ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib:/build/lib
+FROM alpine:3.7
 
 # Our makefiles expect OSTYPE to be defined as below
 ENV OSTYPE=linux-alpine
+
+RUN apk add --no-cache alpine-sdk cmake openssh linux-headers expat-dev jansson-dev yaml-dev openssl curl-dev libmicrohttpd-dev \
+    && cd / \
+    && git clone https://github.com/bitdribble/bitdribble.git \
+    && mkdir bitdribble/build && cd bitdribble/build \
+    && cmake .. \
+    && make -j 4 \
+    && make install    
 
 ENTRYPOINT ["sh"]
 CMD []
