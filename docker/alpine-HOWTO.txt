@@ -1,4 +1,4 @@
-# To build docker image
+# To build alpine-build docker image
 cd bitdribble/docker
 docker build --rm --no-cache -f alpine -t bitdribble/alpine-build . 
 
