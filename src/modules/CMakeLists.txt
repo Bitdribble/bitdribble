@@ -25,6 +25,8 @@ target_link_libraries(bitd-sink-graphite bitd-curl)
 add_library(bitd-sink-influxdb SHARED sink/influxdb.c)
 target_link_libraries(bitd-sink-influxdb bitd-curl)
 
+add_library(bitd-httpd SHARED source/httpd.c)
+
 if (WIN32)
   # Ensure dlls do not use the 'lib' prefix when compiled on Cygwin mingw
   set_target_properties(bitd-assert PROPERTIES PREFIX "")
@@ -34,7 +36,7 @@ if (WIN32)
   set_target_properties(bitd-curl PROPERTIES PREFIX "")
   set_target_properties(bitd-config-log PROPERTIES PREFIX "")
   set_target_properties(bitd-sink-graphite PROPERTIES PREFIX "")
-  set_target_properties(bitd-sink-influxdb PROPERTIES PREFIX "")
+  set_target_properties(bitd-httpd PROPERTIES PREFIX "")
 endif()
 
 install(TARGETS bitd-echo bitd-assert ${BITD_MODULE_EXEC} 
