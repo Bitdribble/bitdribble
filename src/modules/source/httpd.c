@@ -221,7 +221,7 @@ void task_inst_destroy(bitd_task_inst_t p) {
  *============================================================================
  *                        answer_to_connection
  *============================================================================
- * Description:     
+ * Description:     Connection handler
  * Parameters:    
  * Returns:  
  */
