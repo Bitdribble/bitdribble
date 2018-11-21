@@ -26,6 +26,7 @@ add_library(bitd-sink-influxdb SHARED sink/influxdb.c)
 target_link_libraries(bitd-sink-influxdb bitd-curl)
 
 add_library(bitd-httpd SHARED source/httpd.c)
+target_link_libraries(bitd-httpd microhttpd)
 
 if (WIN32)
   # Ensure dlls do not use the 'lib' prefix when compiled on Cygwin mingw

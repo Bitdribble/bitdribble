@@ -17,6 +17,7 @@
 #include "bitd/log.h"
 #include "bitd/module-api.h"
 
+#include <microhttpd.h>
 
 /*****************************************************************************
  *                             MANIFEST CONSTANTS
@@ -27,7 +28,7 @@
 /*****************************************************************************
  *                                  MACROS 
  *****************************************************************************/
-
+#define PORT_DEF 8080
 
 
 /*****************************************************************************
@@ -52,6 +53,7 @@ struct bitd_task_inst_s {
     bitd_nvp_t tags;     /* Task instance tags at creation */
     bitd_event stop_ev;  /* The stop event */
     bitd_boolean stopped_p;
+    struct MHD_Daemon *daemon;
 };
 
 /*****************************************************************************
@@ -217,6 +219,35 @@ void task_inst_destroy(bitd_task_inst_t p) {
 
 /*
  *============================================================================
+ *                        answer_to_connection
+ *============================================================================
+ * Description:     
+ * Parameters:    
+ * Returns:  
+ */
+static int answer_to_connection (void *cls, struct MHD_Connection *connection,
+				 const char *url,
+				 const char *method, const char *version,
+				 const char *upload_data,
+				 size_t *upload_data_size, void **con_cls) {
+
+    const char *page  = "<html><body>Hello, browser!</body></html>";
+    struct MHD_Response *response;
+    int ret;
+    
+    response = MHD_create_response_from_buffer(strlen(page),
+					       (void*)page, 
+					       MHD_RESPMEM_PERSISTENT);
+
+    ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+    MHD_destroy_response(response);
+    
+    return ret;
+}
+
+
+/*
+ *============================================================================
  *                        task_inst_run
  *============================================================================
  * Description:     
@@ -227,6 +258,7 @@ int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
     mmr_task_inst_results_t results;
     char *buf;
     int idx;
+    int port = PORT_DEF;
 
     ttlog(log_level_trace, s_log_keyid,
 	  "%s: %s() called", p->task_inst_name, __FUNCTION__);
@@ -236,17 +268,6 @@ int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
 	ttlog(log_level_trace, s_log_keyid,
 	      "%s: Input:\n%s", p->task_inst_name, buf);
 	free(buf);
-    }
-
-    if (bitd_nvp_lookup_elem(p->tags, "task-inst-sleep", &idx) &&
-	p->tags->e[idx].type == bitd_type_int64) {
-	
-	ttlog(log_level_trace, s_log_keyid,
-	      "%s: %s(): sleeping %u msecs", 
-	      p->task_inst_name, __FUNCTION__, 
-	      p->tags->e[idx].v.value_int64);
-	bitd_event_wait(p->stop_ev, 
-		      (bitd_uint32)p->tags->e[idx].v.value_int64);
     }
 
     memset(&results, 0, sizeof(results));
@@ -259,8 +280,29 @@ int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
 	bitd_object_copy(&results.output, input);
     }
 
+    /* Look for the port argument */
+    if (bitd_nvp_lookup_elem(p->args, "port", &idx) &&
+	p->args->e[idx].type == bitd_type_int64) {
+	port = p->args->e[idx].v.value_int64;
+    }
+
     /* Simply report the input as output */
     mmr_task_inst_report_results(p->mmr_task_inst_hdl, &results);
+
+    p->daemon = MHD_start_daemon (MHD_USE_SELECT_INTERNALLY, port, NULL, NULL,
+				  &answer_to_connection, NULL, MHD_OPTION_END);
+    if (!p->daemon) {
+	return 1;
+    }
+
+    /* Wait on stop event */
+    while (!p->stopped_p) {
+	bitd_event_wait(p->stop_ev, BITD_FOREVER);
+    }
+
+    /* Stop the daemon */
+    MHD_stop_daemon(p->daemon);
+    p->daemon = NULL;
 
     return 0;
 } 
