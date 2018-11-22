@@ -191,8 +191,7 @@ static int answer_to_connection(void *cls,
 
     m = bitd_msg_receive_w_tmo(p->queue, 0);
     if (!m) {
-	response = MHD_create_response_from_buffer(sizeof("Queue empty") - 1,
-						   "Queue empty", 
+	response = MHD_create_response_from_buffer(0, NULL,
 						   MHD_RESPMEM_PERSISTENT);
 	if (response) {
 	    ret = MHD_queue_response(connection, MHD_HTTP_NOT_FOUND,
