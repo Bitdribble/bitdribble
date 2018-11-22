@@ -54,7 +54,7 @@ typedef enum {
  *****************************************************************************/
 
 #define BITD_QUEUE_FLAG_POLL 0x1 /* Allocate a pollable file descriptor
-                                  for the queue */
+				    for the queue */
 
 /* Create/destroy a message queue */
 bitd_queue bitd_queue_create(char *name,              /* May be NULL */ 

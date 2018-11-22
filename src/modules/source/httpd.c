@@ -327,7 +327,7 @@ void task_inst_destroy(bitd_task_inst_t p) {
     count = bitd_queue_count(p->queue);
     if (count) {
 	ttlog(log_level_warn, s_log_keyid,
-	      "%s: %s(): Dropping %u results", 
+	      "%s: %s(): Dropping %u result(s)", 
 	      p->task_inst_name, __FUNCTION__, count);
     }
 
@@ -350,7 +350,9 @@ void task_inst_destroy(bitd_task_inst_t p) {
  * Returns:  
  */
 int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
-    mmr_task_inst_results_t results;
+    char *input_buf = NULL;
+    int input_buf_len = 0;
+    bitd_msg m;
     char *buf;
 
     ttlog(log_level_trace, s_log_keyid,
@@ -363,18 +365,25 @@ int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
 	free(buf);
     }
 
-    memset(&results, 0, sizeof(results));
+    /* Convert input according to input_buffer_type */
+    bitd_object_to_buffer(&input_buf, &input_buf_len,
+			  input,
+			  NULL,
+			  p->input_buffer_type);
 
-    if (p->args) {
-	results.output.type = bitd_type_nvp;
-	results.output.v.value_nvp = p->args;
-    } else {
-	/* Flat memcopy instead of clone */
-	bitd_object_copy(&results.output, input);
+    /* Enqueue input */
+    m = bitd_msg_alloc(0, input_buf_len);
+    memcpy(m, input_buf, input_buf_len);
+
+    if (bitd_msg_send(m, p->queue) != bitd_msgerr_ok) {
+	ttlog(log_level_warn, s_log_keyid,
+	      "%s: Queue full, dropping message", p->task_inst_name);
+	bitd_msg_free(m);
     }
 
-    /* Simply report the input as output */
-    mmr_task_inst_report_results(p->mmr_task_inst_hdl, &results);
+    if (input_buf) {
+	free(input_buf);
+    }
 
     return 0;
 } 
