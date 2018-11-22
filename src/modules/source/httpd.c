@@ -181,13 +181,10 @@ static int answer_to_connection(void *cls,
 
     m = bitd_msg_receive_w_tmo(p->queue, 0);
     if (!m) {
-	const char *errorstr =
-	    "<html><body>Queue empty.</body></html>";
-	response = MHD_create_response_from_buffer(strlen(errorstr), 
-						   (void *) errorstr, 
+	response = MHD_create_response_from_buffer(0, NULL,
 						   MHD_RESPMEM_PERSISTENT);
 	if (response) {
-	    ret = MHD_queue_response(connection, MHD_HTTP_INTERNAL_SERVER_ERROR,
+	    ret = MHD_queue_response(connection, MHD_HTTP_NOT_FOUND,
 				     response);
 	    MHD_destroy_response(response);
 	    return ret;
