@@ -51,6 +51,8 @@ struct bitd_task_inst_s {
     mmr_task_inst_t mmr_task_inst_hdl;
     bitd_nvp_t args;     /* Task instance arguments at creation */
     bitd_nvp_t tags;     /* Task instance tags at creation */
+    bitd_buffer_type_t input_buffer_type;
+    bitd_buffer_type_t output_buffer_type;
     bitd_event stop_ev;  /* The stop event */
     bitd_boolean stopped_p;
     struct MHD_Daemon *daemon;
@@ -229,6 +231,44 @@ bitd_task_inst_t task_inst_create(char *task_name,
 	ttlog(log_level_trace, s_log_keyid,
 	      "%s: Tags:\n%s", task_inst_name, buf);
 	free(buf);
+    }
+
+    /* Parse the input-type parameter */
+    if (bitd_nvp_lookup_elem(args, "input-type", &idx) &&
+	args->e[idx].type == bitd_type_string &&
+	args->e[idx].v.value_string) {
+	if (!strcmp(args->e[idx].v.value_string, "auto")) {
+	    p->input_buffer_type = bitd_buffer_type_auto;
+	} else if (!strcmp(args->e[idx].v.value_string, "string")) {
+	    p->input_buffer_type = bitd_buffer_type_string;
+	} else if (!strcmp(args->e[idx].v.value_string, "blob")) {
+	    p->input_buffer_type = bitd_buffer_type_blob;
+	} else if (!strcmp(args->e[idx].v.value_string, "json")) {
+	    p->input_buffer_type = bitd_buffer_type_json;
+	} else if (!strcmp(args->e[idx].v.value_string, "xml")) {
+	    p->input_buffer_type = bitd_buffer_type_xml;
+	} else if (!strcmp(args->e[idx].v.value_string, "yaml")) {
+	    p->input_buffer_type = bitd_buffer_type_yaml;
+	}
+    }
+
+    /* Parse the output-type parameter */
+    if (bitd_nvp_lookup_elem(args, "output-type", &idx) &&
+	args->e[idx].type == bitd_type_string &&
+	args->e[idx].v.value_string) {
+	if (!strcmp(args->e[idx].v.value_string, "auto")) {
+	    p->output_buffer_type = bitd_buffer_type_auto;
+	} else if (!strcmp(args->e[idx].v.value_string, "string")) {
+	    p->output_buffer_type = bitd_buffer_type_string;
+	} else if (!strcmp(args->e[idx].v.value_string, "blob")) {
+	    p->output_buffer_type = bitd_buffer_type_blob;
+	} else if (!strcmp(args->e[idx].v.value_string, "json")) {
+	    p->output_buffer_type = bitd_buffer_type_json;
+	} else if (!strcmp(args->e[idx].v.value_string, "xml")) {
+	    p->output_buffer_type = bitd_buffer_type_xml;
+	} else if (!strcmp(args->e[idx].v.value_string, "yaml")) {
+	    p->output_buffer_type = bitd_buffer_type_yaml;
+	}
     }
 
     /* Look for the port argument */
