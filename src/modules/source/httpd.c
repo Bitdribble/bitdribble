@@ -171,35 +171,55 @@ static int answer_to_connection(void *cls,
 				size_t *upload_data_size, 
 				void **con_cls) {
 
-    bitd_task_inst_t p = (bitd_task_inst_t) cls;
-    struct MHD_Response *response;
+    bitd_task_inst_t p = (bitd_task_inst_t)cls;
+    struct MHD_Response *response = NULL;
     int ret;
-    bitd_msg m;
+    bitd_msg m = NULL;
     
     ttlog(log_level_trace, s_log_keyid,
 	  "%s: %s() called", p->task_inst_name, __FUNCTION__);
+    
+    if (strcmp(method, "GET")) {
+	return MHD_NO;              /* unexpected method */
+    }
+
+    if (!*con_cls) {
+	/* Allocate the context */
+	*con_cls = malloc(1);
+	return MHD_YES;
+    }
 
     m = bitd_msg_receive_w_tmo(p->queue, 0);
     if (!m) {
-	response = MHD_create_response_from_buffer(0, NULL,
+	response = MHD_create_response_from_buffer(sizeof("Queue empty") - 1,
+						   "Queue empty", 
 						   MHD_RESPMEM_PERSISTENT);
 	if (response) {
 	    ret = MHD_queue_response(connection, MHD_HTTP_NOT_FOUND,
 				     response);
-	    MHD_destroy_response(response);
-	    return ret;
         } else {
-	    return MHD_NO;
+	    ret = MHD_NO;
 	}
+	goto end;
     }
 
     response = MHD_create_response_from_buffer(bitd_msg_get_size(m),
 					       (void*)m, 
-					       MHD_RESPMEM_PERSISTENT);
+					       MHD_RESPMEM_MUST_COPY);
     
     ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
-    MHD_destroy_response(response);
-    bitd_msg_free(m);
+
+ end:
+    if (response) {
+	MHD_destroy_response(response);
+    }
+    if (m) {
+	bitd_msg_free(m);
+    }
+
+    if (*con_cls) {
+	free(*con_cls);
+    }
 
     return ret;
 }
