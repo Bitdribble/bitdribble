@@ -4,8 +4,7 @@ task-inst:
   task-name: httpd
   task-inst-name: Httpd task instance
   schedule:
-    type: periodic
-    interval: 1s
+    type: config
   args:
     name-int64: -128
     name-int64: 127

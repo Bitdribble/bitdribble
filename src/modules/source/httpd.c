@@ -150,75 +150,6 @@ void bitd_module_unload(void) {
 
 /*
  *============================================================================
- *                        task_inst_create
- *============================================================================
- * Description:     
- * Parameters:    
- * Returns:  
- */
-bitd_task_inst_t task_inst_create(char *task_name,
-				  char *task_inst_name,
-				  mmr_task_inst_t mmr_task_inst_hdl, 
-				  bitd_nvp_t args,
-				  bitd_nvp_t tags) {
-    bitd_task_inst_t p;
-    char *buf = NULL;
-
-    ttlog(log_level_trace, s_log_keyid,
-	  "%s: %s() called", task_inst_name, __FUNCTION__);
-
-    p = calloc(1, sizeof(*p));
-    
-    p->task_name = task_name;
-    p->task_inst_name = task_inst_name;
-    p->mmr_task_inst_hdl = mmr_task_inst_hdl;
-    p->stop_ev = bitd_event_create(0);
-
-    /* Save the args and tags */
-    p->args = bitd_nvp_clone(args);
-    p->tags = bitd_nvp_clone(tags);
-
-    /* Log the args and tags */
-    if (p->args) {
-	buf = bitd_nvp_to_yaml(p->args, FALSE, FALSE);
-	ttlog(log_level_trace, s_log_keyid,
-	      "%s: Args:\n%s", task_inst_name, buf);
-	free(buf);
-    }
-
-    if (p->tags) {
-	buf = bitd_nvp_to_yaml(p->tags, FALSE, FALSE);
-	ttlog(log_level_trace, s_log_keyid,
-	      "%s: Tags:\n%s", task_inst_name, buf);
-	free(buf);
-    }
-
-    return p;
-} 
-
-
-/*
- *============================================================================
- *                        task_inst_destroy
- *============================================================================
- * Description:     
- * Parameters:    
- * Returns:  
- */
-void task_inst_destroy(bitd_task_inst_t p) {
-
-    ttlog(log_level_trace, s_log_keyid,
-	  "%s: %s() called", p->task_inst_name, __FUNCTION__);
-
-    bitd_nvp_free(p->args);
-    bitd_nvp_free(p->tags);
-    bitd_event_destroy(p->stop_ev);
-    free(p);
-} 
-
-
-/*
- *============================================================================
  *                        answer_to_connection
  *============================================================================
  * Description:     Connection handler
@@ -255,6 +186,100 @@ static int answer_to_connection(void *cls,
 
 /*
  *============================================================================
+ *                        task_inst_create
+ *============================================================================
+ * Description:     
+ * Parameters:    
+ * Returns:  
+ */
+bitd_task_inst_t task_inst_create(char *task_name,
+				  char *task_inst_name,
+				  mmr_task_inst_t mmr_task_inst_hdl, 
+				  bitd_nvp_t args,
+				  bitd_nvp_t tags) {
+    bitd_task_inst_t p;
+    char *buf = NULL;
+    int idx;
+    int port = PORT_DEF;
+
+    ttlog(log_level_trace, s_log_keyid,
+	  "%s: %s() called", task_inst_name, __FUNCTION__);
+
+    p = calloc(1, sizeof(*p));
+    
+    p->task_name = task_name;
+    p->task_inst_name = task_inst_name;
+    p->mmr_task_inst_hdl = mmr_task_inst_hdl;
+    p->stop_ev = bitd_event_create(0);
+
+    /* Save the args and tags */
+    p->args = bitd_nvp_clone(args);
+    p->tags = bitd_nvp_clone(tags);
+
+    /* Log the args and tags */
+    if (p->args) {
+	buf = bitd_nvp_to_yaml(p->args, FALSE, FALSE);
+	ttlog(log_level_trace, s_log_keyid,
+	      "%s: Args:\n%s", task_inst_name, buf);
+	free(buf);
+    }
+
+    if (p->tags) {
+	buf = bitd_nvp_to_yaml(p->tags, FALSE, FALSE);
+	ttlog(log_level_trace, s_log_keyid,
+	      "%s: Tags:\n%s", task_inst_name, buf);
+	free(buf);
+    }
+
+    /* Look for the port argument */
+    if (bitd_nvp_lookup_elem(p->args, "port", &idx) &&
+	p->args->e[idx].type == bitd_type_int64) {
+	port = p->args->e[idx].v.value_int64;
+    }
+
+    p->daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, 
+				 port, 
+				 NULL, 
+				 NULL,
+				 &answer_to_connection, 
+				 p, 
+				 MHD_OPTION_END);
+    if (!p->daemon) {
+	task_inst_destroy(p);
+	return NULL;
+    }
+
+    return p;
+} 
+
+
+/*
+ *============================================================================
+ *                        task_inst_destroy
+ *============================================================================
+ * Description:     
+ * Parameters:    
+ * Returns:  
+ */
+void task_inst_destroy(bitd_task_inst_t p) {
+
+    ttlog(log_level_trace, s_log_keyid,
+	  "%s: %s() called", p->task_inst_name, __FUNCTION__);
+
+    /* Stop the daemon */
+    if (p->daemon) {
+	MHD_stop_daemon(p->daemon);
+    }
+
+    bitd_nvp_free(p->args);
+    bitd_nvp_free(p->tags);
+    bitd_event_destroy(p->stop_ev);
+    free(p);
+} 
+
+
+/*
+ *============================================================================
  *                        task_inst_run
  *============================================================================
  * Description:     
@@ -264,8 +289,6 @@ static int answer_to_connection(void *cls,
 int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
     mmr_task_inst_results_t results;
     char *buf;
-    int idx;
-    int port = PORT_DEF;
 
     ttlog(log_level_trace, s_log_keyid,
 	  "%s: %s() called", p->task_inst_name, __FUNCTION__);
@@ -287,34 +310,8 @@ int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
 	bitd_object_copy(&results.output, input);
     }
 
-    /* Look for the port argument */
-    if (bitd_nvp_lookup_elem(p->args, "port", &idx) &&
-	p->args->e[idx].type == bitd_type_int64) {
-	port = p->args->e[idx].v.value_int64;
-    }
-
     /* Simply report the input as output */
     mmr_task_inst_report_results(p->mmr_task_inst_hdl, &results);
-
-    p->daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, 
-				 port, 
-				 NULL, 
-				 NULL,
-				 &answer_to_connection, 
-				 p, 
-				 MHD_OPTION_END);
-    if (!p->daemon) {
-	return 1;
-    }
-
-    /* Wait on stop event */
-    while (!p->stopped_p) {
-	bitd_event_wait(p->stop_ev, BITD_FOREVER);
-    }
-
-    /* Stop the daemon */
-    MHD_stop_daemon(p->daemon);
-    p->daemon = NULL;
 
     return 0;
 } 
