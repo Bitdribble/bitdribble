@@ -172,20 +172,38 @@ static int answer_to_connection(void *cls,
 				void **con_cls) {
 
     bitd_task_inst_t p = (bitd_task_inst_t) cls;
-    const char *page  = "<html><body>Hello, browser!</body></html>";
     struct MHD_Response *response;
     int ret;
+    bitd_msg m;
     
     ttlog(log_level_trace, s_log_keyid,
 	  "%s: %s() called", p->task_inst_name, __FUNCTION__);
 
-    response = MHD_create_response_from_buffer(strlen(page),
-					       (void*)page, 
-					       MHD_RESPMEM_PERSISTENT);
+    m = bitd_msg_receive_w_tmo(p->queue, 0);
+    if (!m) {
+	const char *errorstr =
+	    "<html><body>Queue empty.</body></html>";
+	response = MHD_create_response_from_buffer(strlen(errorstr), 
+						   (void *) errorstr, 
+						   MHD_RESPMEM_PERSISTENT);
+	if (response) {
+	    ret = MHD_queue_response(connection, MHD_HTTP_INTERNAL_SERVER_ERROR,
+				     response);
+	    MHD_destroy_response(response);
+	    return ret;
+        } else {
+	    return MHD_NO;
+	}
+    }
 
+    response = MHD_create_response_from_buffer(bitd_msg_get_size(m),
+					       (void*)m, 
+					       MHD_RESPMEM_PERSISTENT);
+    
     ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
     MHD_destroy_response(response);
-    
+    bitd_msg_free(m);
+
     return ret;
 }
 
