@@ -15,6 +15,7 @@
 #include "bitd/common.h"
 #include "bitd/types.h"
 #include "bitd/log.h"
+#include "bitd/msg.h"
 #include "bitd/module-api.h"
 
 #include <microhttpd.h>
@@ -29,6 +30,7 @@
  *                                  MACROS 
  *****************************************************************************/
 #define PORT_DEF 8080
+#define QUOTA_DEF 1000
 
 
 /*****************************************************************************
@@ -56,6 +58,8 @@ struct bitd_task_inst_s {
     bitd_event stop_ev;  /* The stop event */
     bitd_boolean stopped_p;
     struct MHD_Daemon *daemon;
+    bitd_uint32 quota;   /* Outgoing queue quota */
+    bitd_queue queue;    /* The outgoing queue */
 };
 
 /*****************************************************************************
@@ -277,6 +281,14 @@ bitd_task_inst_t task_inst_create(char *task_name,
 	port = p->args->e[idx].v.value_int64;
     }
 
+    /* Get the queue quota */
+    p->quota = QUOTA_DEF;
+
+    /* Create the message queue */
+    p->queue = bitd_queue_create("plaintext background", 
+				 BITD_QUEUE_FLAG_POLL, 
+				 p->quota);
+
     p->daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, 
 				 port, 
 				 NULL, 
@@ -302,6 +314,7 @@ bitd_task_inst_t task_inst_create(char *task_name,
  * Returns:  
  */
 void task_inst_destroy(bitd_task_inst_t p) {
+    bitd_uint32 count;
 
     ttlog(log_level_trace, s_log_keyid,
 	  "%s: %s() called", p->task_inst_name, __FUNCTION__);
@@ -310,6 +323,16 @@ void task_inst_destroy(bitd_task_inst_t p) {
     if (p->daemon) {
 	MHD_stop_daemon(p->daemon);
     }
+
+    count = bitd_queue_count(p->queue);
+    if (count) {
+	ttlog(log_level_warn, s_log_keyid,
+	      "%s: %s(): Dropping %u results", 
+	      p->task_inst_name, __FUNCTION__, count);
+    }
+
+    /* Destroy the queue */
+    bitd_queue_destroy(p->queue);
 
     bitd_nvp_free(p->args);
     bitd_nvp_free(p->tags);

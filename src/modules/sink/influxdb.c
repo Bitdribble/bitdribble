@@ -64,8 +64,8 @@ struct tcp_background_cb {
     char *post_url;
     bitd_event stop_ev;      /* The stop event */
     bitd_boolean stopped_p;
-    bitd_uint32 quota;       /* Message queue quota */
-    bitd_queue queue;        /* The results queue */
+    bitd_uint32 quota;       /* Outgoing queue quota */
+    bitd_queue queue;        /* The outgoing queue */
 };
 
 struct bitd_task_inst_s {
@@ -206,8 +206,8 @@ bitd_task_inst_t task_inst_create(char *task_name,
 
     /* Create the message queue */
     p->tcb.queue = bitd_queue_create("plaintext background", 
-				   BITD_QUEUE_FLAG_POLL, 
-				   p->tcb.quota);
+				     BITD_QUEUE_FLAG_POLL, 
+				     p->tcb.quota);
 
     /* Call the update routine to set further configuration */
     task_inst_update(p, args, tags);
@@ -274,8 +274,8 @@ void task_inst_update(bitd_task_inst_t p,
 
     /* Find the url */
     if (bitd_nvp_lookup_elem(args,
-			   "url",
-			   &idx) &&
+			     "url",
+			     &idx) &&
 	args->e[idx].type == bitd_type_string &&
 	args->e[idx].v.value_string) {
 	/* Copy the server address */
@@ -284,8 +284,8 @@ void task_inst_update(bitd_task_inst_t p,
 
     /* Find the database name */
     if (bitd_nvp_lookup_elem(args,
-			   "database",
-			   &idx) &&
+			     "database",
+			     &idx) &&
 	args->e[idx].type == bitd_type_string &&
 	args->e[idx].v.value_string) {
 	/* Copy the server address */
@@ -295,8 +295,8 @@ void task_inst_update(bitd_task_inst_t p,
     /* Get the queue quota */
     p->tcb.quota = QUOTA_DEF;
     if (bitd_nvp_lookup_elem(p->args,
-			   "queue-size",
-			   &idx)) {
+			     "queue-size",
+			     &idx)) {
 	if (p->args->e[idx].type == bitd_type_int64 &&
 	    p->args->e[idx].v.value_int64 > 0) {
 	    p->tcb.quota = (bitd_uint32)p->args->e[idx].v.value_int64;
