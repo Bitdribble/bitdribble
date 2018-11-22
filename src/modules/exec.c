@@ -337,6 +337,7 @@ bitd_task_inst_t task_inst_create(char *task_name,
 	} 
     }
 
+    /* Parse the input-type parameter */
     if (bitd_nvp_lookup_elem(args, "input-type", &idx) &&
 	args->e[idx].type == bitd_type_string &&
 	args->e[idx].v.value_string) {
@@ -355,6 +356,7 @@ bitd_task_inst_t task_inst_create(char *task_name,
 	}
     }
 
+    /* Parse the output-type parameter */
     if (bitd_nvp_lookup_elem(args, "output-type", &idx) &&
 	args->e[idx].type == bitd_type_string &&
 	args->e[idx].v.value_string) {
@@ -373,6 +375,7 @@ bitd_task_inst_t task_inst_create(char *task_name,
 	}
     }
 
+    /* Parse the error-type parameter */
     if (bitd_nvp_lookup_elem(args, "error-type", &idx) &&
 	args->e[idx].type == bitd_type_string  &&
 	args->e[idx].v.value_string) {
