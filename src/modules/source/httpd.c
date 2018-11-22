@@ -387,7 +387,7 @@ int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
     bitd_object_to_buffer(&input_buf, &input_buf_len,
 			  input,
 			  NULL,
-			  p->input_buffer_type);
+			  p->output_buffer_type);
 
     /* Enqueue input */
     m = bitd_msg_alloc(0, input_buf_len);

@@ -2181,6 +2181,12 @@ void bitd_object_to_buffer(char **buf, int *buf_nbytes,
 	return;
     } 
 
+    if (buffer_type == bitd_buffer_type_json) {
+	*buf = bitd_object_to_json(a, FALSE, FALSE);
+	*buf_nbytes = strlen(*buf);
+	return;
+    } 
+
     /* Convert the auto type */
     if (buffer_type == bitd_buffer_type_auto) {
 	if (a->type == bitd_type_nvp) {
