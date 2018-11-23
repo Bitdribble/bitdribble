@@ -31,7 +31,9 @@
 /*****************************************************************************
  *                                  TYPES
  *****************************************************************************/
-
+struct test2_tcb {
+    bitd_queue q;
+};
 
 
 /*****************************************************************************
@@ -68,7 +70,7 @@ static void usage() {
            "  -n test_count\n"
            "    Run only this test.\n"
            "  -v verbose_level, --verbose verbose_level\n"
-           "    Set the verbosity level (default: 2).\n"
+           "    Set the verbosity level (default: 0).\n"
            "  -h, --help, -?\n"
            "    Show this help.\n");
 } 
@@ -127,6 +129,30 @@ static int test1(void) {
 
 /*
  *============================================================================
+ *                        test2_thread_entry
+ *============================================================================
+ * Description:     
+ * Parameters:    
+ * Returns:  
+ */
+static void test2_thread_entry(void *thread_arg) {
+    struct test2_tcb *tcb = (struct test2_tcb *)thread_arg;
+
+    if (g_verbose > 0) {
+	printf("Test2: calling receive()\n");
+    }
+
+    /* Wait forever for messages on queue */
+    bitd_msg_receive(tcb->q);
+    
+    if (g_verbose > 0) {
+	printf("Test2: receive() unblocked\n");
+    }
+} 
+
+
+/*
+ *============================================================================
  *                        test2
  *============================================================================
  * Description:     
@@ -135,13 +161,22 @@ static int test1(void) {
  */
 static int test2(void) {
     int ret = 0;
-    bitd_queue q0 = NULL, q1 = NULL;
+    struct test2_tcb tcb = {};
+    bitd_thread th;
 
-    q0 = bitd_queue_create(NULL, 0, 0);
-    q1 = bitd_queue_create(NULL, 0, 0);
+    tcb.q = bitd_queue_create(NULL, 0, 0);
 
-    bitd_queue_destroy(q0);
-    bitd_queue_destroy(q1);
+    /* Create thread */
+    th = bitd_create_thread(NULL, &test2_thread_entry, 0, 0, &tcb);
+
+    /* Wait a bit for thread to be created */
+    bitd_sleep(250);
+
+    /* Destroy the queue that the thread is waiting on */
+    bitd_queue_destroy(tcb.q);
+
+    /* Wait for thread to exit */
+    bitd_join_thread(th);
 
     return ret;
 } 
