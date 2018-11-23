@@ -211,7 +211,7 @@ void bitd_queue_destroy(bitd_queue q) {
  *============================================================================
  *                        bitd_queue_addref
  *============================================================================
- * Description:     
+ * Description:  Increment the queue reference count   
  * Parameters:    
  * Returns:  
  */
@@ -229,7 +229,8 @@ void bitd_queue_addref(bitd_queue q) {
  *============================================================================
  *                        bitd_queue_delref
  *============================================================================
- * Description:     
+ * Description:     Decrement the queue reference count, and free the queue
+ *     when it reaches zero.
  * Parameters:    
  * Returns:  
  */
