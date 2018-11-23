@@ -180,6 +180,7 @@ static int answer_to_connection(void *cls,
     int idx;
     char *output_buf = NULL;
     int output_buf_len = 0;
+    int output_buf_type = bitd_buffer_type_auto;
 
     ttlog(log_level_trace, s_log_keyid,
 	  "%s: %s() called", p->task_inst_name, __FUNCTION__);
@@ -217,15 +218,35 @@ static int answer_to_connection(void *cls,
     }
     
     /* Convert output */
-    bitd_object_to_buffer(&output_buf, &output_buf_len,
-			  &output,
-			  NULL,
-			  p->output_buffer_type);
+    output_buf_type = bitd_object_to_buffer(&output_buf, &output_buf_len,
+					    &output,
+					    NULL,
+					    p->output_buffer_type);
 
     response = MHD_create_response_from_buffer(output_buf_len,
 					       output_buf, 
 					       MHD_RESPMEM_MUST_COPY);
     
+    switch (output_buf_type) {
+    case bitd_buffer_type_string:
+	MHD_add_response_header(response, "Content-Type", "text/plain");
+	break;
+    case bitd_buffer_type_blob:
+	MHD_add_response_header(response, "Content-Type", "application/octet-stream");
+	break;
+    case bitd_buffer_type_json:
+	MHD_add_response_header(response, "Content-Type", "application/json");
+	break;
+    case bitd_buffer_type_xml:
+	MHD_add_response_header(response, "Content-Type", "application/xml");
+	break;
+    case bitd_buffer_type_yaml:
+	MHD_add_response_header(response, "Content-Type", "text/vnd.yaml");
+	break;
+    default:
+	break;
+    }
+
     ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
 
  end:
