@@ -8,7 +8,7 @@ task-inst:
     interval: 30s
   args:
     input-type: json
-    output-type: json
+    output-type: string
   input:
     name-int64: -128
     name-int64: 127

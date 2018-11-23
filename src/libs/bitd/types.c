@@ -2202,8 +2202,7 @@ bitd_buffer_type_t bitd_object_to_buffer(char **buf, int *buf_nbytes,
     }
 
     /* Convert nvp objects as yaml */
-    if (buffer_type == bitd_buffer_type_string ||
-	buffer_type == bitd_buffer_type_blob) {
+    if (buffer_type == bitd_buffer_type_blob) {
 	if (a->type == bitd_type_nvp) {
 	    /* Convert buffer type to yaml */
 	    buffer_type = bitd_buffer_type_yaml;
