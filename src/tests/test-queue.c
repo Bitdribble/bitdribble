@@ -76,13 +76,13 @@ static void usage() {
 
 /*
  *============================================================================
- *                        test_create_queues_same_name
+ *                        test1
  *============================================================================
- * Description:     
+ * Description:     Create queues with the same name
  * Parameters:    
  * Returns:  
  */
-static int test_create_queues_same_name(void) {
+static int test1(void) {
     int ret = 0;
     bitd_queue q0 = NULL, q1 = NULL, q2 = NULL, q3 = NULL;
 
@@ -127,13 +127,13 @@ static int test_create_queues_same_name(void) {
 
 /*
  *============================================================================
- *                        test_destroy_queue_while_receiving
+ *                        test2
  *============================================================================
  * Description:     
  * Parameters:    
  * Returns:  
  */
-static int test_destroy_queue_while_receiving(void) {
+static int test2(void) {
     int ret = 0;
     bitd_queue q0 = NULL, q1 = NULL;
 
@@ -160,9 +160,9 @@ static int test(int test_idx) {
 
     switch (test_idx) {
     case 0:
-	return test_create_queues_same_name();
+	return test1();
     case 1:
-	return test_destroy_queue_while_receiving();
+	return test2();
     default:
 	break;
     }
