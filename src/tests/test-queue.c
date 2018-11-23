@@ -76,13 +76,13 @@ static void usage() {
 
 /*
  *============================================================================
- *                        run_test_create_queues_same_name
+ *                        test_create_queues_same_name
  *============================================================================
  * Description:     
  * Parameters:    
  * Returns:  
  */
-static int run_test_create_queues_same_name(void) {
+static int test_create_queues_same_name(void) {
     int ret = 0;
     bitd_queue q0 = NULL, q1 = NULL, q2 = NULL, q3 = NULL;
 
@@ -127,18 +127,42 @@ static int run_test_create_queues_same_name(void) {
 
 /*
  *============================================================================
- *                        run_test
+ *                        test_destroy_queue_while_receiving
+ *============================================================================
+ * Description:     
+ * Parameters:    
+ * Returns:  
+ */
+static int test_destroy_queue_while_receiving(void) {
+    int ret = 0;
+    bitd_queue q0 = NULL, q1 = NULL;
+
+    q0 = bitd_queue_create(NULL, 0, 0);
+    q1 = bitd_queue_create(NULL, 0, 0);
+
+    bitd_queue_destroy(q0);
+    bitd_queue_destroy(q1);
+
+    return ret;
+} 
+
+
+/*
+ *============================================================================
+ *                        test
  *============================================================================
  * Description:     Run the test indicated by test_idx
  * Parameters:    
  *     test_idx - the index of the test
  * Returns:  Exit code of the test
  */
-static int run_test(int test_idx) {
+static int test(int test_idx) {
 
     switch (test_idx) {
     case 0:
-	return run_test_create_queues_same_name();
+	return test_create_queues_same_name();
+    case 1:
+	return test_destroy_queue_while_receiving();
     default:
 	break;
     }
@@ -184,7 +208,7 @@ int main(int argc, char ** argv) {
 	    run_all_tests_p = FALSE;
 
             /* Run this one test */
-            ret = run_test(atoi(argv[0]));
+            ret = test(atoi(argv[0]));
 	    if (ret) {
 		/* Skip to end when test exits with non-zero code */
 		goto end;
@@ -220,7 +244,7 @@ int main(int argc, char ** argv) {
 
     if (run_all_tests_p) {
 	for (i = 0; i < 1; i++) {
-	    ret = run_test(i);
+	    ret = test(i);
 	    if (ret) {
 		goto end;
 	    }
