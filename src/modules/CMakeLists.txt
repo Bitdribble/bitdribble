@@ -25,7 +25,7 @@ target_link_libraries(bitd-sink-graphite bitd-curl)
 add_library(bitd-sink-influxdb SHARED sink/influxdb.c)
 target_link_libraries(bitd-sink-influxdb bitd-curl)
 
-add_library(bitd-httpd SHARED source/httpd.c)
+add_library(bitd-httpd SHARED http/httpd.c)
 target_link_libraries(bitd-httpd microhttpd)
 
 if (WIN32)
