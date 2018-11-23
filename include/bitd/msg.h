@@ -62,6 +62,9 @@ bitd_queue bitd_queue_create(char *name,              /* May be NULL */
 			     bitd_uint64 size_quota); /* If 0, infinite queue */
 void bitd_queue_destroy(bitd_queue q);
 
+void bitd_queue_addref(bitd_queue q);
+void bitd_queue_delref(bitd_queue q);
+
 /* Change the queue quota - if 0, queue is infinite */
 void bitd_queue_set_quota(bitd_queue q, bitd_uint64 size_quota);
 

@@ -143,11 +143,13 @@ static void test2_thread_entry(void *thread_arg) {
     }
 
     /* Wait forever for messages on queue */
-    bitd_msg_receive(tcb->q);
+    bitd_msg_receive_w_tmo(tcb->q, 250);
     
     if (g_verbose > 0) {
 	printf("Test2: receive() unblocked\n");
     }
+
+    bitd_queue_delref(tcb->q);
 } 
 
 
@@ -165,12 +167,13 @@ static int test2(void) {
     bitd_thread th;
 
     tcb.q = bitd_queue_create(NULL, 0, 0);
+    bitd_queue_addref(tcb.q);
 
     /* Create thread */
     th = bitd_create_thread(NULL, &test2_thread_entry, 0, 0, &tcb);
 
     /* Wait a bit for thread to be created */
-    bitd_sleep(250);
+    bitd_sleep(20);
 
     /* Destroy the queue that the thread is waiting on */
     bitd_queue_destroy(tcb.q);
@@ -278,7 +281,7 @@ int main(int argc, char ** argv) {
     }
 
     if (run_all_tests_p) {
-	for (i = 0; i < 1; i++) {
+	for (i = 0; i < 2; i++) {
 	    ret = test(i);
 	    if (ret) {
 		goto end;

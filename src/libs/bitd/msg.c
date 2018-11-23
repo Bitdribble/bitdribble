@@ -43,6 +43,7 @@ struct bitd_queue_s {
     bitd_event receive_ev;
     bitd_event quota_ev;
     int ev_flags;
+    int refcount;
 };
 
 #define QUEUE_MAGIC 0xabcdaaaa
@@ -119,6 +120,7 @@ bitd_queue bitd_queue_create(char *name,
         q->ev_flags |= BITD_EVENT_FLAG_POLL;
     }
     q->receive_ev = bitd_event_create(q->ev_flags);
+    q->refcount = 1;
 
     if (!q->lock || !q->receive_ev) {
         goto end;
@@ -156,6 +158,7 @@ end:
  */
 void bitd_queue_destroy(bitd_queue q) {
     bitd_msg m, m_next;
+    int refcount;
 
     if (!q) {
 	return;
@@ -163,7 +166,16 @@ void bitd_queue_destroy(bitd_queue q) {
 
     /* Sanity checks */
     ASSERT_QUEUE(q);
-    
+
+    if (q->lock) {
+        bitd_mutex_lock(q->lock);
+	refcount = (--q->refcount);
+        bitd_mutex_unlock(q->lock);
+	if (refcount > 0) {
+	    return;
+	}
+    }
+
     /* Release all queue buffers */
     m = q->head;
     while (m) {
@@ -193,6 +205,37 @@ void bitd_queue_destroy(bitd_queue q) {
     /* Deallocate the queue control block */
     free(q);
 }
+
+
+/*
+ *============================================================================
+ *                        bitd_queue_addref
+ *============================================================================
+ * Description:     
+ * Parameters:    
+ * Returns:  
+ */
+void bitd_queue_addref(bitd_queue q) {
+    /* Sanity checks */
+    ASSERT_QUEUE(q);
+
+    bitd_mutex_lock(q->lock);
+    ++q->refcount;
+    bitd_mutex_unlock(q->lock);
+} 
+
+
+/*
+ *============================================================================
+ *                        bitd_queue_delref
+ *============================================================================
+ * Description:     
+ * Parameters:    
+ * Returns:  
+ */
+void bitd_queue_delref(bitd_queue q) {
+    bitd_queue_destroy(q);
+} 
 
 
 /*
