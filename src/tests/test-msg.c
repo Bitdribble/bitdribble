@@ -217,7 +217,7 @@ int main(int argc, char ** argv) {
     /* Allocate the main queue */
     g_queue = bitd_queue_create("main queue", 0, 0);
     g_quota_queue = bitd_queue_create("quota queue", 0, 
-				    3 * (MSG_HDR_SIZE + MSG_SIZE));
+				      3 * (MSG_HDR_SIZE + MSG_SIZE));
 
     /* Allocate the array of thread control blocks */
     g_tcb = calloc(thread_count, sizeof(*g_tcb));
@@ -227,8 +227,8 @@ int main(int argc, char ** argv) {
 
         sprintf(thread_name, "thread %d", i);
         g_tcb[i].th = bitd_create_thread(thread_name, 
-				       entry,
-				       0, 0, (void *)(long long)i);
+					 entry,
+					 0, 0, (void *)(long long)i);
         bitd_assert(g_tcb[i].th);
     }
 
@@ -243,8 +243,8 @@ int main(int argc, char ** argv) {
 	bitd_int32 thread_idx;
 
         m = bitd_msg_receive_selective(g_quota_queue, 
-                                     thread_count, opcode_all, 
-                                     BITD_FOREVER);
+				       thread_count, opcode_all, 
+				       BITD_FOREVER);
         bitd_assert(m);
 
 	thread_idx = bitd_msg_get_opcode(m);
