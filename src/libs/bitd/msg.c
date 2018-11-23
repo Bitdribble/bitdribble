@@ -87,15 +87,16 @@ struct bitd_msg_s {
  *============================================================================
  * Description: Create a message queue
  * Parameters:
- *     name - the name of the queue
- *     queue_flags - self-explanatory
- *     size_quota - if non-zero, this is the max number of bytes permitted
- *         in the queue.
+ *     name - The name of the queue. May be NULL.
+ *     queue_flags - The following flag is supported:
+ *         BITD_QUEUE_FLAG_POLL - Queue event is pollable
+ *     size_quota - If non-zero, this is the max number of bytes permitted
+ *         in the queue. If zero, queue is infinite.
  * Returns:
  */
-bitd_queue bitd_queue_create(char *name,            /* May be NULL */ 
-                         bitd_uint32 queue_flags, /* BITD_QUEUE_FLAG_POLL */
-                         bitd_uint64 size_quota) { /* If 0, queue is infinite */
+bitd_queue bitd_queue_create(char *name,              
+			     bitd_uint32 queue_flags, 
+			     bitd_uint64 size_quota) {
     bitd_queue q;
     int ret = -1;
 

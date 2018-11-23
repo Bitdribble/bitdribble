@@ -83,7 +83,45 @@ static void usage() {
  * Returns:  
  */
 static int run_test_create_queues_same_name(void) {
-    return 0;
+    int ret = 0;
+    bitd_queue q0 = NULL, q1 = NULL, q2 = NULL, q3 = NULL;
+
+    q0 = bitd_queue_create(NULL, 0, 0);
+    q1 = bitd_queue_create(NULL, 0, 0);
+    q2 = bitd_queue_create("foo", 0, 0);
+    q3 = bitd_queue_create("foo", 0, 0);
+    
+    if (!q0 || !q1) {
+	if (g_verbose > 0) {
+	    printf("Could not create queue with NULL name\n");
+	}
+	ret = -1;
+	goto end;
+    }
+
+    if (!q2) {
+	if (g_verbose > 0) {
+	    printf("Could not create queue with non-NULL name\n");
+	}
+	ret = -1;
+	goto end;
+    }
+
+    if (!q3) {
+	if (g_verbose > 0) {
+	    printf("Should allow 2nd queue with same non-NULL name\n");
+	}
+	ret = -1;
+	goto end;
+    }
+
+ end:
+    bitd_queue_destroy(q0);
+    bitd_queue_destroy(q1);
+    bitd_queue_destroy(q2);
+    bitd_queue_destroy(q3);
+
+    return ret;
 } 
 
 
