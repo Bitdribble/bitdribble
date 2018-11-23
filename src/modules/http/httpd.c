@@ -16,6 +16,7 @@
 #include "bitd/types.h"
 #include "bitd/log.h"
 #include "bitd/msg.h"
+#include "bitd/pack.h"
 #include "bitd/module-api.h"
 
 #include <microhttpd.h>
@@ -173,14 +174,21 @@ static int answer_to_connection(void *cls,
 
     bitd_task_inst_t p = (bitd_task_inst_t)cls;
     struct MHD_Response *response = NULL;
-    int ret;
+    int ret = MHD_NO;
     bitd_msg m = NULL;
-    
+    bitd_object_t output;
+    int idx;
+    char *output_buf = NULL;
+    int output_buf_len = 0;
+
     ttlog(log_level_trace, s_log_keyid,
 	  "%s: %s() called", p->task_inst_name, __FUNCTION__);
     
+    bitd_object_init(&output);
+
     if (strcmp(method, "GET")) {
-	return MHD_NO;              /* unexpected method */
+	/* Unexpected method */
+	return MHD_NO;
     }
 
     if (!*con_cls) {
@@ -196,14 +204,26 @@ static int answer_to_connection(void *cls,
 	if (response) {
 	    ret = MHD_queue_response(connection, MHD_HTTP_NOT_FOUND,
 				     response);
-        } else {
-	    ret = MHD_NO;
 	}
 	goto end;
     }
 
-    response = MHD_create_response_from_buffer(bitd_msg_get_size(m),
-					       (void*)m, 
+    /* Unpack output */
+    idx = 0;
+    if (!bitd_unpack_object((char *)m, bitd_msg_get_size(m), &idx, &output)) {
+	ttlog(log_level_err, s_log_keyid,
+	      "%s: Failed to unpack object", p->task_inst_name);
+	goto end;
+    }
+    
+    /* Convert output */
+    bitd_object_to_buffer(&output_buf, &output_buf_len,
+			  &output,
+			  NULL,
+			  p->output_buffer_type);
+
+    response = MHD_create_response_from_buffer(output_buf_len,
+					       output_buf, 
 					       MHD_RESPMEM_MUST_COPY);
     
     ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
@@ -215,9 +235,13 @@ static int answer_to_connection(void *cls,
     if (m) {
 	bitd_msg_free(m);
     }
+    bitd_object_free(&output);
 
     if (*con_cls) {
 	free(*con_cls);
+    }
+    if (output_buf) {
+	free(output_buf);
     }
 
     return ret;
@@ -384,9 +408,8 @@ void task_inst_destroy(bitd_task_inst_t p) {
  * Returns:  
  */
 int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
-    char *input_buf = NULL;
-    int input_buf_len = 0;
     bitd_msg m;
+    int idx, len;
     char *buf;
 
     ttlog(log_level_trace, s_log_keyid,
@@ -399,15 +422,15 @@ int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
 	free(buf);
     }
 
-    /* Convert input according to input_buffer_type */
-    bitd_object_to_buffer(&input_buf, &input_buf_len,
-			  input,
-			  NULL,
-			  p->output_buffer_type);
-
-    /* Enqueue input */
-    m = bitd_msg_alloc(0, input_buf_len);
-    memcpy(m, input_buf, input_buf_len);
+    len = bitd_get_packed_size_object(input);    
+    m = bitd_msg_alloc(0, len);
+    
+    idx = 0;
+    if (!bitd_pack_object((char *)m, len, &idx, input)) {
+	ttlog(log_level_err, s_log_keyid,
+	      "%s: Failed to pack object", p->task_inst_name);
+	goto end;
+    }
 
     if (bitd_msg_send(m, p->queue) != bitd_msgerr_ok) {
 	ttlog(log_level_warn, s_log_keyid,
@@ -415,10 +438,7 @@ int task_inst_run(bitd_task_inst_t p, bitd_object_t *input) {
 	bitd_msg_free(m);
     }
 
-    if (input_buf) {
-	free(input_buf);
-    }
-
+ end:
     return 0;
 } 
 

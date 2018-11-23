@@ -2141,7 +2141,7 @@ void bitd_buffer_to_object(bitd_object_t *a,
 
 /*
  *============================================================================
- *                        bitd_buffer_to_object
+ *                        bitd_object_to_buffer
  *============================================================================
  * Description:  Print object into buffer, according to buffer_type parameter
  * Parameters:    
