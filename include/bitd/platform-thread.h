@@ -67,9 +67,9 @@ void bitd_sys_thread_deinit(void);
 
 /* Create and start the thread */
 bitd_thread bitd_create_thread(const char* name,
-                           bitd_thread_entrypoint_t *entry, 
-                           bitd_int32 priority, bitd_uint32 stack_nbytes,
-                           void *thread_arg);
+			       bitd_thread_entrypoint_t *entry, 
+			       bitd_int32 priority, bitd_uint32 stack_nbytes,
+			       void *thread_arg);
 
 /* Wait for the thread to terminate.  Deletes the thread object. */
 void bitd_join_thread(bitd_thread th);

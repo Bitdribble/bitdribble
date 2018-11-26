@@ -2051,11 +2051,12 @@ void bitd_value_map(char *name, char sep, int depth,
  *     buf_nbytes - length of buf
  *     buffer_type - determines conversion format
  * Returns:  
+ *     Type that was converted.
  */
-void bitd_buffer_to_object(bitd_object_t *a, 
-			   char **object_name,
-			   char *buf, int buf_nbytes,
-			   bitd_buffer_type_t buffer_type) {
+bitd_buffer_type_t bitd_buffer_to_object(bitd_object_t *a, 
+					 char **object_name,
+					 char *buf, int buf_nbytes,
+					 bitd_buffer_type_t buffer_type) {
     bitd_boolean ret;
     register char *c;
     register int i;
@@ -2063,7 +2064,7 @@ void bitd_buffer_to_object(bitd_object_t *a,
     /* Parameter check */
     if (!a) {
 	bitd_assert(0);
-	return;
+	return bitd_buffer_type_auto;
     }
 
     /* Initialize the OUT parameters */
@@ -2074,7 +2075,7 @@ void bitd_buffer_to_object(bitd_object_t *a,
 
     /* Parameter check */
     if (!buf || !buf_nbytes) {
-	return;
+	return bitd_buffer_type_auto;
     }
 
     if (buffer_type == bitd_buffer_type_auto) {
@@ -2082,17 +2083,17 @@ void bitd_buffer_to_object(bitd_object_t *a,
 	ret = bitd_json_to_object(a, buf, buf_nbytes, NULL, 0);
 	if (ret) {
 	    /* Detected json - object is already converted */
-	    return;
+	    return bitd_buffer_type_json;
 	}
 	ret = bitd_xml_to_object(a, object_name, buf, buf_nbytes, NULL, 0);
 	if (ret) {
 	    /* Detected xml - object is already converted */
-	    return;
+	    return bitd_buffer_type_xml;
 	}
 	ret = bitd_yaml_to_object(a, buf, buf_nbytes, NULL, NULL, 0);
 	if (ret) {
 	    /* Detected yaml - object is already converted */
-	    return;
+	    return bitd_buffer_type_yaml;
 	}
 
 	/* Does the buffer contain any zero character? */
@@ -2116,32 +2117,34 @@ void bitd_buffer_to_object(bitd_object_t *a,
 	a->v.value_string = malloc(buf_nbytes + 1);
 	memcpy(a->v.value_string, buf, buf_nbytes);
 	a->v.value_string[buf_nbytes] = 0;
-	break;
+	return bitd_buffer_type_string;
     case bitd_buffer_type_blob:
 	/* Convert to blob */
 	a->type = bitd_type_blob;
 	a->v.value_blob = malloc(sizeof(bitd_blob) + buf_nbytes);
 	bitd_blob_size(a->v.value_blob) = buf_nbytes;
 	memcpy(bitd_blob_payload(a->v.value_blob), buf, buf_nbytes);
-	break;
+	return bitd_buffer_type_blob;
     case bitd_buffer_type_json:
 	bitd_json_to_object(a, buf, buf_nbytes, NULL, 0);
-	break;
+	return bitd_buffer_type_json;
     case bitd_buffer_type_xml:
 	bitd_xml_to_object(a, object_name, buf, buf_nbytes, NULL, 0);
-	break;
+	return bitd_buffer_type_xml;
     case bitd_buffer_type_yaml:
 	bitd_yaml_to_object(a, buf, buf_nbytes, NULL, NULL, 0);
-	break;
+	return bitd_buffer_type_yaml;
     default:
 	bitd_assert(0);
     }
+
+    return bitd_buffer_type_auto;
 } 
 
 
 /*
  *============================================================================
- *                        bitd_buffer_to_object
+ *                        bitd_object_to_buffer
  *============================================================================
  * Description:  Print object into buffer, according to buffer_type parameter
  * Parameters:    
@@ -2151,12 +2154,12 @@ void bitd_buffer_to_object(bitd_object_t *a,
  *     object_name - the input object name, for buffers output in xml format
  *     buffer_type - determines conversion format
  * Returns:  
+ *     Type that was converted.
  */
-void bitd_object_to_buffer(char **buf, int *buf_nbytes,
-			   bitd_object_t *a, 
-			   char *object_name,
-			   bitd_buffer_type_t buffer_type) {
-
+bitd_buffer_type_t bitd_object_to_buffer(char **buf, int *buf_nbytes,
+					 bitd_object_t *a, 
+					 char *object_name,
+					 bitd_buffer_type_t buffer_type) {
     /* Initialize OUT parameters */
     if (buf) {
 	*buf = NULL;
@@ -2167,18 +2170,24 @@ void bitd_object_to_buffer(char **buf, int *buf_nbytes,
 
     /* OUT parameter check */
     if (!buf || !buf_nbytes) {
-	return;
+	return bitd_buffer_type_auto;
     }
 
     /* Parameter check */
     if (!a || a->type == bitd_type_void) {
-	return;
+	return bitd_buffer_type_auto;
     }
     
     if (buffer_type == bitd_buffer_type_xml) {
 	*buf = bitd_object_to_xml(a, object_name, FALSE);
 	*buf_nbytes = strlen(*buf);
-	return;
+	return bitd_buffer_type_auto;
+    } 
+
+    if (buffer_type == bitd_buffer_type_json) {
+	*buf = bitd_object_to_json(a, FALSE, FALSE);
+	*buf_nbytes = strlen(*buf);
+	return bitd_buffer_type_json;
     } 
 
     /* Convert the auto type */
@@ -2193,8 +2202,7 @@ void bitd_object_to_buffer(char **buf, int *buf_nbytes,
     }
 
     /* Convert nvp objects as yaml */
-    if (buffer_type == bitd_buffer_type_string ||
-	buffer_type == bitd_buffer_type_blob) {
+    if (buffer_type == bitd_buffer_type_blob) {
 	if (a->type == bitd_type_nvp) {
 	    /* Convert buffer type to yaml */
 	    buffer_type = bitd_buffer_type_yaml;
@@ -2204,14 +2212,17 @@ void bitd_object_to_buffer(char **buf, int *buf_nbytes,
     if (buffer_type == bitd_buffer_type_yaml) {
 	*buf = bitd_object_to_yaml(a, FALSE, FALSE);
 	*buf_nbytes = strlen(*buf);
+	return bitd_buffer_type_yaml;
     } else if (a->type == bitd_type_blob) {
 	*buf_nbytes = bitd_blob_size(a->v.value_blob);
 	*buf = malloc(*buf_nbytes);
 	memcpy(*buf, 
 	       bitd_blob_payload(a->v.value_blob), 
 	       *buf_nbytes);
+	return bitd_buffer_type_blob;
     } else {
 	*buf = bitd_object_to_string(a);
 	*buf_nbytes = strlen(*buf);
+	return bitd_buffer_type_string;
     }
 }

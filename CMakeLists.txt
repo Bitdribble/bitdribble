@@ -79,6 +79,11 @@ if (APPLE)
  endif()
 endif()
 
+# Cygwin needs this folder in the library path
+if (CMAKE_SYSTEM_NAME MATCHES "CYGWIN")
+   link_directories("/usr/local/lib")
+endif()
+
 if (NOT WIN32 AND NOT OPENWRT)
   find_package(EXPAT REQUIRED)
   include_directories(${EXPAT_INCLUDE_DIRS})

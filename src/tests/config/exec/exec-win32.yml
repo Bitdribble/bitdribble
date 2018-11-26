@@ -1,0 +1,46 @@
+modules:
+  module-name: bitd-exec
+  module-name: bitd-assert
+
+#
+# Test output parameter
+#
+task-inst:
+  task-name: exec
+  task-inst-name: Exec-output
+  schedule:
+    type: once
+  args:
+    command: echo hi
+    command-tmo: 1
+task-inst:
+  task-name: assert
+  task-inst-name: Assert-output
+  schedule:
+    type: triggered-raw
+    task-inst-name: Exec-output
+    exit-on-error: true
+  args:
+    output: hi
+
+#
+# Test error parameter
+#
+task-inst:
+  task-name: exec
+  task-inst-name: Exec-error
+  schedule:
+    type: once
+  args:
+    command: echo hi >&2
+    command-tmo: 1
+task-inst:
+  task-name: assert
+  task-inst-name: Assert-error
+  schedule:
+    type: triggered-raw
+    task-inst-name: Exec-error
+    exit-on-error: true
+  args:
+    error: hi
+

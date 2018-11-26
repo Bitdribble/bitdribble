@@ -212,16 +212,17 @@ typedef enum {
     bitd_buffer_type_yaml
 } bitd_buffer_type_t;
 
-/* Parse buffer and convert to object */
-extern void bitd_buffer_to_object(bitd_object_t *a, char **object_name,
-				  char *buf, int buf_nbytes,
-				  bitd_buffer_type_t buffer_type);
-
-/* Print object into buffer */
-extern void bitd_object_to_buffer(char **buf, int *buf_nbytes,
-				  bitd_object_t *a, 
-				  char *object_name,
-				  bitd_buffer_type_t buffer_type);
+/* Parse buffer and convert to object. Return conversion type. */
+extern bitd_buffer_type_t bitd_buffer_to_object(bitd_object_t *a, 
+						char **object_name,
+						char *buf, int buf_nbytes,
+						bitd_buffer_type_t buffer_type);
+    
+/* Print object into buffer. Return conversion type. */
+extern bitd_buffer_type_t bitd_object_to_buffer(char **buf, int *buf_nbytes,
+						bitd_object_t *a, 
+						char *object_name,
+						bitd_buffer_type_t buffer_type);
 
 /*
  * Json apis

@@ -43,6 +43,7 @@ struct bitd_queue_s {
     bitd_event receive_ev;
     bitd_event quota_ev;
     int ev_flags;
+    int refcount;
 };
 
 #define QUEUE_MAGIC 0xabcdaaaa
@@ -87,15 +88,16 @@ struct bitd_msg_s {
  *============================================================================
  * Description: Create a message queue
  * Parameters:
- *     name - the name of the queue
- *     queue_flags - self-explanatory
- *     size_quota - if non-zero, this is the max number of bytes permitted
- *         in the queue.
+ *     name - The name of the queue. May be NULL.
+ *     queue_flags - The following flag is supported:
+ *         BITD_QUEUE_FLAG_POLL - Queue event is pollable
+ *     size_quota - If non-zero, this is the max number of bytes permitted
+ *         in the queue. If zero, queue is infinite.
  * Returns:
  */
-bitd_queue bitd_queue_create(char *name,            /* May be NULL */ 
-                         bitd_uint32 queue_flags, /* BITD_QUEUE_FLAG_POLL */
-                         bitd_uint64 size_quota) { /* If 0, queue is infinite */
+bitd_queue bitd_queue_create(char *name,              
+			     bitd_uint32 queue_flags, 
+			     bitd_uint64 size_quota) {
     bitd_queue q;
     int ret = -1;
 
@@ -118,6 +120,7 @@ bitd_queue bitd_queue_create(char *name,            /* May be NULL */
         q->ev_flags |= BITD_EVENT_FLAG_POLL;
     }
     q->receive_ev = bitd_event_create(q->ev_flags);
+    q->refcount = 1;
 
     if (!q->lock || !q->receive_ev) {
         goto end;
@@ -155,6 +158,7 @@ end:
  */
 void bitd_queue_destroy(bitd_queue q) {
     bitd_msg m, m_next;
+    int refcount;
 
     if (!q) {
 	return;
@@ -162,7 +166,16 @@ void bitd_queue_destroy(bitd_queue q) {
 
     /* Sanity checks */
     ASSERT_QUEUE(q);
-    
+
+    if (q->lock) {
+        bitd_mutex_lock(q->lock);
+	refcount = (--q->refcount);
+        bitd_mutex_unlock(q->lock);
+	if (refcount > 0) {
+	    return;
+	}
+    }
+
     /* Release all queue buffers */
     m = q->head;
     while (m) {
@@ -192,6 +205,38 @@ void bitd_queue_destroy(bitd_queue q) {
     /* Deallocate the queue control block */
     free(q);
 }
+
+
+/*
+ *============================================================================
+ *                        bitd_queue_addref
+ *============================================================================
+ * Description:  Increment the queue reference count   
+ * Parameters:    
+ * Returns:  
+ */
+void bitd_queue_addref(bitd_queue q) {
+    /* Sanity checks */
+    ASSERT_QUEUE(q);
+
+    bitd_mutex_lock(q->lock);
+    ++q->refcount;
+    bitd_mutex_unlock(q->lock);
+} 
+
+
+/*
+ *============================================================================
+ *                        bitd_queue_delref
+ *============================================================================
+ * Description:     Decrement the queue reference count, and free the queue
+ *     when it reaches zero.
+ * Parameters:    
+ * Returns:  
+ */
+void bitd_queue_delref(bitd_queue q) {
+    bitd_queue_destroy(q);
+} 
 
 
 /*

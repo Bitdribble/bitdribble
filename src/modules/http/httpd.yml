@@ -1,0 +1,15 @@
+modules:
+  module-name: bitd-httpd
+task-inst:
+  task-name: httpd
+  task-inst-name: Httpd task instance
+  schedule:
+    type: periodic
+    interval: 30s
+  args:
+    input-type: json
+    output-type: string
+  input:
+    name-int64: -128
+    name-int64: 127
+    name-boolean: FALSE
